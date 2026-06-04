@@ -1,10 +1,10 @@
 {
   "mcpServers": {
-    "archi-mcp": {
+    "archimate-mcp": {
       "command": "uv",
       "args": [
         "run",
-        "archi-mcp"
+        "archimate-mcp"
       ],
       "env": {
         "FASTMCP_LOG_LEVEL": "<YOUR_FASTMCP_LOG_LEVEL>",

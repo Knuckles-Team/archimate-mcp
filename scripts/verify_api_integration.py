@@ -10,7 +10,7 @@ BASELINES = {
     "archivebox-api": 85.7,
     "documentdb-mcp": 100.0,
     "github-agent": 100.0,
-    "archi-mcp": 6.4,
+    "archimate-mcp": 6.4,
     "home-assistant-agent": 63.6,
     "jellyfin-mcp": 81.0,
     "langfuse-agent": 100.0,

@@ -1,10 +1,10 @@
-# archi-mcp - AGENTS
+# archimate-mcp - AGENTS
 
 > Claude Code loads this file via `CLAUDE.md` (`@AGENTS.md` import) — the two stay
 > in sync. Edit **this** file, not `CLAUDE.md`.
 
 ## Project Structure
-- `archi_mcp/`: Main server code (ArchiMate model engine, MCP, A2A)
+- `archimate_mcp/`: Main server code (ArchiMate model engine, MCP, A2A)
 - `tests/`: Test suite
 - `docs/`: Architecture documentation
 

@@ -2,7 +2,7 @@
 
 ``ArchiApi`` is the equivalent of an HTTP API client in the other ``*-mcp``
 packages, but instead of talking to a remote server it drives a local
-:class:`~archi_mcp.api.archimate_model.ArchiMateModel`. Agents get the full
+:class:`~archimate_mcp.api.archimate_model.ArchiMateModel`. Agents get the full
 ArchiMate authoring surface: model lifecycle, element/relationship/folder/view
 CRUD, query/traversal, and Open Exchange Format import/export so the models
 open directly in Archi.
@@ -13,7 +13,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from archi_mcp.api.archimate_model import (
+from archimate_mcp.api.archimate_model import (
     ELEMENT_TYPES,
     LAYER_OF_TYPE,
     RELATIONSHIP_TYPES,
@@ -409,7 +409,7 @@ class ArchiApi:
     # Vocabulary helpers
     # ------------------------------------------------------------------ #
     def element_types(self) -> dict[str, Any]:
-        from archi_mcp.api.archimate_model import ELEMENT_TYPES_BY_LAYER
+        from archimate_mcp.api.archimate_model import ELEMENT_TYPES_BY_LAYER
 
         return {
             "by_layer": ELEMENT_TYPES_BY_LAYER,

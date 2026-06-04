@@ -1,11 +1,11 @@
-"""Public client facade for archi_mcp.
+"""Public client facade for archimate_mcp.
 
 Mirrors the ``Api`` facade pattern used across the ``*-mcp`` packages. Here the
 underlying client is the self-contained ArchiMate model engine rather than an
 HTTP client, since Archi has no remote API.
 """
 
-from archi_mcp.api.api_client_archi import ArchiApi
+from archimate_mcp.api.api_client_archi import ArchiApi
 
 __version__ = "0.2.0"
 

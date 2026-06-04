@@ -1,1 +1,1 @@
-# archi-mcp Docs
+# archimate-mcp Docs

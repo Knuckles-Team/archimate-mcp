@@ -1,4 +1,4 @@
-# Tasks: Code Enhancement: archi-mcp
+# Tasks: Code Enhancement: archimate-mcp
 
 Generated: 2026-06-02T02:26:47.344807+00:00
 Skipped informational: 4

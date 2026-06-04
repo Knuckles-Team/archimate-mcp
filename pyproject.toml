@@ -3,7 +3,7 @@ requires = [ "setuptools>=80.9.0", "wheel",]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "archi-mcp"
+name = "archimate-mcp"
 version = "0.3.0"
 description = "ArchiMate model engine + MCP Server + A2A Server for Agentic AI!"
 readme = "README.md"
@@ -24,8 +24,8 @@ all = [ "agent-utilities[mcp,agent,logfire]>=0.41.0",]
 test = [ "pytest-xdist>=3.6.0", "pytest", "pytest-asyncio", "pytest-cov",]
 
 [project.scripts]
-archi-mcp = "archi_mcp.mcp_server:mcp_server"
-archi-agent = "archi_mcp.agent_server:agent_server"
+archimate-mcp = "archimate_mcp.mcp_server:mcp_server"
+archimate-agent = "archimate_mcp.agent_server:agent_server"
 
 [tool.setuptools]
 include-package-data = true
@@ -43,7 +43,7 @@ check_untyped_defs = true
 dev = [ "pytest-timeout>=2.4.0",]
 
 [tool.setuptools.package-data]
-archi_mcp = [ "mcp_config.json", "agent_data/**",]
+archimate_mcp = [ "mcp_config.json", "agent_data/**",]
 
 [tool.ruff.lint]
 select = [ "E", "F", "I", "UP", "B",]

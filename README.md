@@ -1,4 +1,4 @@
-# archi-mcp
+# archimate-mcp
 
 A self-contained **ArchiMate model engine** exposed as a Model Context
 Protocol (MCP) server and an A2A agent. It gives AI agents full ArchiMate 3.x
@@ -7,7 +7,7 @@ relationships, folders, and views (diagrams), query/traverse the model, and
 import/export the **Open Group Model Exchange File Format** so the models open
 directly in [Archi](https://www.archimatetool.com/).
 
-Archi has no native server API, so `archi-mcp` ships its own dependency-light
+Archi has no native server API, so `archimate-mcp` ships its own dependency-light
 engine built on the Python standard library (`xml.etree.ElementTree`).
 
 ## Table of Contents
@@ -20,7 +20,7 @@ engine built on the Python standard library (`xml.etree.ElementTree`).
 - [MCP Tools](#mcp-tools)
 
 ## Overview
-`archi-mcp` exposes a standardized interface for authoring ArchiMate models via
+`archimate-mcp` exposes a standardized interface for authoring ArchiMate models via
 the Model Context Protocol. The full ArchiMate vocabulary (Strategy, Business,
 Application, Technology, Physical, Motivation, Implementation layers) and all
 relationship types are supported, with structural validation and round-trip
@@ -34,28 +34,28 @@ pip install -e .
 ## Usage
 Run the MCP server directly:
 ```bash
-archi-mcp
+archimate-mcp
 ```
 
 Or run the agent server:
 ```bash
-archi-agent
+archimate-agent
 ```
 
 ## Architecture
 See `/docs` for architectural diagrams and further documentation. The model
-engine lives in `archi_mcp/api/` (`archimate_model.py`, `api_client_archi.py`),
-the MCP tools in `archi_mcp/mcp/mcp_archi.py`.
+engine lives in `archimate_mcp/api/` (`archimate_model.py`, `api_client_archi.py`),
+the MCP tools in `archimate_mcp/mcp/mcp_archi.py`.
 
 ## Deployment
 ### Bare-metal
 ```bash
-archi-agent
+archimate-agent
 ```
 
 ### Docker
 ```bash
-docker build -f docker/Dockerfile -t archi-mcp .
+docker build -f docker/Dockerfile -t archimate-mcp .
 ```
 
 ## Environment Variables

@@ -1,4 +1,4 @@
-# Concept Registry — archi-mcp
+# Concept Registry — archimate-mcp
 > **Prefix**: `CONCEPT:ARCHI-*`
 
 | Concept ID | Name | Description |

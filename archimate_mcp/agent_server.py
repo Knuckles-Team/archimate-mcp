@@ -1,4 +1,4 @@
-"""Graph-based Pydantic AI agent server entry point for archi-mcp."""
+"""Graph-based Pydantic AI agent server entry point for archimate-mcp."""
 
 import logging
 import os

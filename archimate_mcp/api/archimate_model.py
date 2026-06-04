@@ -1,6 +1,6 @@
 """In-memory ArchiMate 3.x model and Open Exchange Format (de)serialization.
 
-This module is the heart of ``archi-mcp``. Archi (the open-source ArchiMate
+This module is the heart of ``archimate-mcp``. Archi (the open-source ArchiMate
 modeling tool) has no native server API, so instead of an HTTP client this
 package ships a self-contained ArchiMate model engine that agents can drive.
 

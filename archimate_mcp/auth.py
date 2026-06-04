@@ -1,7 +1,7 @@
 """Client factory for the ArchiMate model engine.
 
 Archi has no remote server, so there is nothing to authenticate against.
-``get_client`` simply points an :class:`~archi_mcp.api_client.Api` (the
+``get_client`` simply points an :class:`~archimate_mcp.api_client.Api` (the
 ArchiMate model engine) at the model file named by ``ARCHI_MODEL_PATH``,
 loading it if it already exists.
 """
@@ -10,7 +10,7 @@ import os
 
 from agent_utilities.base_utilities import get_logger
 
-from archi_mcp.api_client import Api
+from archimate_mcp.api_client import Api
 
 logger = get_logger(__name__)
 

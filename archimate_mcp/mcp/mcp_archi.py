@@ -1,8 +1,8 @@
 """Thin MCP wrappers around the ArchiMate model engine.
 
 Each tool is a thin shim: it parses params, calls the corresponding
-:class:`~archi_mcp.api.api_client_archi.ArchiApi` method, and returns the
-result. All authoring logic lives in ``archi_mcp.api`` — these tools add no
+:class:`~archimate_mcp.api.api_client_archi.ArchiApi` method, and returns the
+result. All authoring logic lives in ``archimate_mcp.api`` — these tools add no
 business logic. Mutations are written to ``ARCHI_MODEL_PATH`` after each call
 so the in-memory model and the on-disk Open Exchange file stay in sync.
 """
@@ -13,7 +13,7 @@ from typing import Any
 from fastmcp import FastMCP
 from pydantic import Field
 
-from archi_mcp.auth import get_client
+from archimate_mcp.auth import get_client
 
 
 def _persist(client) -> None:

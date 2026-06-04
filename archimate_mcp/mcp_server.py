@@ -1,4 +1,4 @@
-"""Main FastMCP server and tool registration for archi-mcp."""
+"""Main FastMCP server and tool registration for archimate-mcp."""
 
 import os
 import sys
@@ -11,10 +11,10 @@ from fastmcp.utilities.logging import get_logger
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from archi_mcp.mcp.mcp_archi import register_archi_tools
+from archimate_mcp.mcp.mcp_archi import register_archi_tools
 
 __version__ = "0.2.0"
-logger = get_logger(name="archi_mcp")
+logger = get_logger(name="archimate_mcp")
 
 
 def get_mcp_instance() -> tuple[Any, ...]:
