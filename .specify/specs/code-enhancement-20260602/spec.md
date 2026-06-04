@@ -1,6 +1,6 @@
-# Code Enhancement: archimate-mcp
+# Code Enhancement: archi-mcp
 
-> Automated code enhancement review for archimate-mcp. Covers 17 analysis domains.
+> Automated code enhancement review for archi-mcp. Covers 17 analysis domains.
 
 ## User Stories
 

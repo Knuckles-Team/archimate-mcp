@@ -1,9 +1,9 @@
 {
-  "name": "archimate-mcp-agent",
+  "name": "archi-mcp-agent",
   "type": "agent",
   "version": "0.2.0",
-  "description": "Agent package for archimate-mcp",
-  "url": "https://github.com/user/archimate-mcp/tree/main",
+  "description": "ArchiMate modeling agent: author elements, relationships, folders, and views; query/traverse models; import/export the Open Group Model Exchange File Format for Archi.",
+  "url": "https://github.com/Knuckles-Team/archi-mcp/tree/main",
   "license": "MIT",
   "capabilities": [
     {

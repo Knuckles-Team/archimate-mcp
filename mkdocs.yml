@@ -1,6 +1,6 @@
-site_name: "archimate-mcp"
-repo_name: "Knuckles-Team/archimate-mcp"
-repo_url: "https://github.com/Knuckles-Team/archimate-mcp"
+site_name: "archi-mcp"
+repo_name: "Knuckles-Team/archi-mcp"
+repo_url: "https://github.com/Knuckles-Team/archi-mcp"
 theme:
   name: material
   features:

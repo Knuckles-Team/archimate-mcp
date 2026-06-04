@@ -1,8 +1,8 @@
 {
   "feature_id": "code-enhancement-20260602",
-  "title": "Code Enhancement: archimate-mcp",
+  "title": "Code Enhancement: archi-mcp",
   "created": "2026-06-02T02:26:47.344807+00:00",
-  "overview": "Automated code enhancement review for archimate-mcp. Covers 17 analysis domains.",
+  "overview": "Automated code enhancement review for archi-mcp. Covers 17 analysis domains.",
   "user_stories": [
     {
       "role": "developer",

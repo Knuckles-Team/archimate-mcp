@@ -1,2 +1,0 @@
-class DomainClient:
-    pass

@@ -10,7 +10,7 @@ BASELINES = {
     "archivebox-api": 85.7,
     "documentdb-mcp": 100.0,
     "github-agent": 100.0,
-    "archimate-mcp": 6.4,
+    "archi-mcp": 6.4,
     "home-assistant-agent": 63.6,
     "jellyfin-mcp": 81.0,
     "langfuse-agent": 100.0,
@@ -117,7 +117,7 @@ def parse_mcp_server(filepath, api_methods):
             if (
                 is_tool
                 or node.name.startswith("github_")
-                or node.name.startswith("archimate_")
+                or node.name.startswith("archi_")
                 or node.name.startswith("adguard_")
                 or node.name.startswith("atlassian_")
             ):

@@ -1,17 +1,18 @@
-# archimate-mcp - AGENTS
+# archi-mcp - AGENTS
 
 > Claude Code loads this file via `CLAUDE.md` (`@AGENTS.md` import) — the two stay
 > in sync. Edit **this** file, not `CLAUDE.md`.
 
 ## Project Structure
-- `src/` or `archimate_mcp/`: Main server code
+- `archi_mcp/`: Main server code (ArchiMate model engine, MCP, A2A)
 - `tests/`: Test suite
 - `docs/`: Architecture documentation
 
 ## Tech Stack
-- Python 3.12+
-- agent-utilities >= 0.16.0
+- Python 3.11+
+- agent-utilities >= 0.41.0
 - Model Context Protocol (MCP)
+- ArchiMate 3.x + Open Group Model Exchange File Format (stdlib `xml.etree.ElementTree`)
 
 ## Commands
 - `pytest`: Run tests

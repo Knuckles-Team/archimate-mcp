@@ -3,12 +3,12 @@ import asyncio
 import os
 import sys
 
-from archimate_mcp.archimate_agent import chat, node_chat, stream_chat
+from archi_mcp.archi_agent import chat, node_chat, stream_chat
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 try:
-    from archimate_mcp.archimate_agent import create_agent
+    from archi_mcp.archi_agent import create_agent
 except ImportError as e:
     print(f"Import Error: {e}")
     print("Please install dependencies via `pip install .[all]`")
@@ -16,7 +16,7 @@ except ImportError as e:
 
 
 async def main():
-    print("Initializing ArchimateA2A Agent...")
+    print("Initializing ArchiA2A Agent...")
     try:
         agent = create_agent(
             provider="openai",
