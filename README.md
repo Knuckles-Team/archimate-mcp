@@ -10,6 +10,10 @@ directly in [Archi](https://www.archimatetool.com/).
 Archi has no native server API, so `archimate-mcp` ships its own dependency-light
 engine built on the Python standard library (`xml.etree.ElementTree`).
 
+> **Documentation** — Installation, deployment, usage across the API, CLI, and MCP
+> interfaces, and the A2A agent server are maintained in the
+> [official documentation](https://knuckles-team.github.io/archimate-mcp/).
+
 ## Table of Contents
 - [Overview](#overview)
 - [Installation](#installation)
@@ -73,3 +77,19 @@ docker build -f docker/Dockerfile -t archimate-mcp .
 | `archi_view` | Views (diagrams): create/add_element/add_connection/list/get |
 | `archi_folder` | Organizations (folders): add/move/list |
 | `archi_query` | Query/traversal: neighbors/relationships_of/by_type + vocabulary |
+
+## Documentation
+
+The complete documentation is published as the
+[official documentation site](https://knuckles-team.github.io/archimate-mcp/) and is
+the recommended reference for installation, deployment, and day-to-day operation.
+
+| Page | Contents |
+|---|---|
+| [Installation](https://knuckles-team.github.io/archimate-mcp/installation/) | pip, source, extras, prebuilt Docker image |
+| [Deployment](https://knuckles-team.github.io/archimate-mcp/deployment/) | run the MCP and agent servers, Compose, Caddy + Technitium, env config |
+| [Usage](https://knuckles-team.github.io/archimate-mcp/usage/) | the MCP tools, the `ArchiApi` client, the CLI |
+| [Overview](https://knuckles-team.github.io/archimate-mcp/overview/) | the model engine, layered façade, MCP/A2A surface |
+| [Concepts](https://knuckles-team.github.io/archimate-mcp/concepts/) | concept registry (`CONCEPT:ARCHI-*`) |
+
+`AGENTS.md` is the canonical contributor/agent guidance.
