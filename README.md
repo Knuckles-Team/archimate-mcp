@@ -84,14 +84,22 @@ consumed from a **remote deployment**. The
 | `ARCHITOOL` | Enable/disable the ArchiMate tool registration. Default `True`. |
 
 ## MCP Tools
-| Tool | Description |
-|------|-------------|
-| `archi_model` | Model lifecycle: new/load/save/export_exchange/import_exchange/summary |
-| `archi_element` | Element CRUD: add/get/update/delete/list/find |
-| `archi_relationship` | Relationship CRUD + validate: add/get/update/delete/list/validate |
-| `archi_view` | Views (diagrams): create/add_element/add_connection/list/get |
-| `archi_folder` | Organizations (folders): add/move/list |
-| `archi_query` | Query/traversal: neighbors/relationships_of/by_type + vocabulary |
+
+The table below is auto-generated from the live server — do not edit by hand.
+
+<!-- MCP-TOOLS-TABLE:START -->
+
+| MCP Tool | Toggle Env Var | Description |
+|----------|----------------|-------------|
+| `archi_element` | `ELEMENTTOOL` | Create, read, update, delete, list, or search elements. |
+| `archi_folder` | `FOLDERTOOL` | Manage organizations (folders) and place items in them. |
+| `archi_model` | `MODELTOOL` | Manage the model lifecycle and Open Exchange import/export. |
+| `archi_query` | `QUERYTOOL` | Traverse and introspect the model and its vocabulary. |
+| `archi_relationship` | `RELATIONSHIPTOOL` | Create, read, update, delete, list, or validate relationships. |
+| `archi_view` | `VIEWTOOL` | Create views (diagrams) and place elements/connections on them. |
+
+_6 action-routed tools (default `MCP_TOOL_MODE=condensed`). Each is enabled unless its toggle is set false; set `MCP_TOOL_MODE=verbose` (or `both`) for the 1:1 per-operation surface. Auto-generated — do not edit._
+<!-- MCP-TOOLS-TABLE:END -->
 
 ## Documentation
 
