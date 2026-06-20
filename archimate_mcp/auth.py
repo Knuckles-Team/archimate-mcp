@@ -6,9 +6,8 @@ ArchiMate model engine) at the model file named by ``ARCHI_MODEL_PATH``,
 loading it if it already exists.
 """
 
-import os
-
 from agent_utilities.base_utilities import get_logger
+from agent_utilities.core.config import setting
 
 from archimate_mcp.api_client import Api
 
@@ -22,5 +21,5 @@ def get_client() -> Api:
     model is created. Honors ``ARCHI_MODEL_PATH`` (default
     ``./model.archimate``).
     """
-    model_path = os.getenv("ARCHI_MODEL_PATH", "./model.archimate")
+    model_path = setting("ARCHI_MODEL_PATH", "./model.archimate")
     return Api(model_path=model_path)

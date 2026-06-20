@@ -1,16 +1,20 @@
 """Main FastMCP server and tool registration for archimate-mcp."""
 
-import os
 import sys
 from typing import Any
 
-from agent_utilities.base_utilities import to_boolean
-from agent_utilities.mcp_utilities import create_mcp_server, load_config
+from agent_utilities.mcp_utilities import (
+    create_mcp_server,
+    load_config,
+    register_tool_surface,
+)
 from fastmcp.utilities.logging import get_logger
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from archimate_mcp.mcp.mcp_archi import register_archi_tools
+from archimate_mcp.api_client import Api
+from archimate_mcp.auth import get_client
+from archimate_mcp.mcp import mcp_archi
 
 __version__ = "0.2.0"
 logger = get_logger(name="archimate_mcp")
@@ -33,8 +37,14 @@ def get_mcp_instance() -> tuple[Any, ...]:
     async def health_check(request: Request) -> JSONResponse:
         return JSONResponse({"status": "OK"})
 
-    if to_boolean(os.getenv("ARCHITOOL", "True")):
-        register_archi_tools(mcp)
+    registered_tags = register_tool_surface(
+        mcp,
+        client_cls=Api,
+        get_client=get_client,
+        service="archimate-mcp",
+        tools_module=mcp_archi,
+    )
+    _ = registered_tags
 
     for mw in middlewares:
         mcp.add_middleware(mw)
