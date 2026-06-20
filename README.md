@@ -91,12 +91,12 @@ The table below is auto-generated from the live server — do not edit by hand.
 
 | MCP Tool | Toggle Env Var | Description |
 |----------|----------------|-------------|
-| `archi_element` | `ELEMENTTOOL` | Create, read, update, delete, list, or search elements. |
-| `archi_folder` | `FOLDERTOOL` | Manage organizations (folders) and place items in them. |
-| `archi_model` | `MODELTOOL` | Manage the model lifecycle and Open Exchange import/export. |
-| `archi_query` | `QUERYTOOL` | Traverse and introspect the model and its vocabulary. |
-| `archi_relationship` | `RELATIONSHIPTOOL` | Create, read, update, delete, list, or validate relationships. |
-| `archi_view` | `VIEWTOOL` | Create views (diagrams) and place elements/connections on them. |
+| `archi_element` | `ARCHITOOL` | Create, read, update, delete, list, or search elements. |
+| `archi_folder` | `ARCHITOOL` | Manage organizations (folders) and place items in them. |
+| `archi_model` | `ARCHITOOL` | Manage the model lifecycle and Open Exchange import/export. |
+| `archi_query` | `ARCHITOOL` | Traverse and introspect the model and its vocabulary. |
+| `archi_relationship` | `ARCHITOOL` | Create, read, update, delete, list, or validate relationships. |
+| `archi_view` | `ARCHITOOL` | Create views (diagrams) and place elements/connections on them. |
 
 _6 action-routed tools (default `MCP_TOOL_MODE=condensed`). Each is enabled unless its toggle is set false; set `MCP_TOOL_MODE=verbose` (or `both`) for the 1:1 per-operation surface. Auto-generated — do not edit._
 <!-- MCP-TOOLS-TABLE:END -->
