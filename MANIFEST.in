@@ -1,5 +1,5 @@
 include README.md
 include requirements.txt
-recursive-include archimate_mcp *.py
+recursive-include archimate_mcp *.py *.json *.md *.yaml *.yml
 recursive-include archimate_mcp *.json
 recursive-include archimate_mcp/agent_data *
