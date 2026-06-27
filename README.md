@@ -210,6 +210,8 @@ The table below is auto-generated from the live server — do not edit by hand.
 
 <!-- MCP-TOOLS-TABLE:START -->
 
+#### Condensed action-routed tools (default — `MCP_TOOL_MODE=condensed`)
+
 | MCP Tool | Toggle Env Var | Description |
 |----------|----------------|-------------|
 | `archi_element` | `ARCHITOOL` | Create, read, update, delete, list, or search elements. |
@@ -219,7 +221,48 @@ The table below is auto-generated from the live server — do not edit by hand.
 | `archi_relationship` | `ARCHITOOL` | Create, read, update, delete, list, or validate relationships. |
 | `archi_view` | `ARCHITOOL` | Create views (diagrams) and place elements/connections on them. |
 
-_6 action-routed tools (default `MCP_TOOL_MODE=condensed`). Each is enabled unless its toggle is set false; set `MCP_TOOL_MODE=verbose` (or `both`) for the 1:1 per-operation surface. Auto-generated — do not edit._
+#### Verbose 1:1 API-mapped tools (`MCP_TOOL_MODE=verbose` or `both`)
+
+<details>
+<summary>31 per-operation tools — one per public API method (click to expand)</summary>
+
+| MCP Tool | Toggle Env Var | Description |
+|----------|----------------|-------------|
+| `archimate_add_connection_to_view` | `ARCHI_APITOOL` | Invoke the add_connection_to_view operation. |
+| `archimate_add_element` | `ARCHI_APITOOL` | Invoke the add_element operation. |
+| `archimate_add_element_to_view` | `ARCHI_APITOOL` | Invoke the add_element_to_view operation. |
+| `archimate_add_folder` | `ARCHI_APITOOL` | Invoke the add_folder operation. |
+| `archimate_add_relationship` | `ARCHI_APITOOL` | Invoke the add_relationship operation. |
+| `archimate_create_view` | `ARCHI_APITOOL` | Invoke the create_view operation. |
+| `archimate_delete_element` | `ARCHI_APITOOL` | Invoke the delete_element operation. |
+| `archimate_delete_relationship` | `ARCHI_APITOOL` | Invoke the delete_relationship operation. |
+| `archimate_element_types` | `ARCHI_APITOOL` | Invoke the element_types operation. |
+| `archimate_elements_by_type` | `ARCHI_APITOOL` | Invoke the elements_by_type operation. |
+| `archimate_export_open_exchange` | `ARCHI_APITOOL` | Invoke the export_open_exchange operation. |
+| `archimate_find_elements` | `ARCHI_APITOOL` | Invoke the find_elements operation. |
+| `archimate_get_element` | `ARCHI_APITOOL` | Invoke the get_element operation. |
+| `archimate_get_relationship` | `ARCHI_APITOOL` | Invoke the get_relationship operation. |
+| `archimate_get_view` | `ARCHI_APITOOL` | Invoke the get_view operation. |
+| `archimate_import_open_exchange` | `ARCHI_APITOOL` | Invoke the import_open_exchange operation. |
+| `archimate_list_elements` | `ARCHI_APITOOL` | Invoke the list_elements operation. |
+| `archimate_list_folders` | `ARCHI_APITOOL` | Invoke the list_folders operation. |
+| `archimate_list_relationships` | `ARCHI_APITOOL` | Invoke the list_relationships operation. |
+| `archimate_list_views` | `ARCHI_APITOOL` | Invoke the list_views operation. |
+| `archimate_load` | `ARCHI_APITOOL` | Invoke the load operation. |
+| `archimate_model_summary` | `ARCHI_APITOOL` | Invoke the model_summary operation. |
+| `archimate_move_to_folder` | `ARCHI_APITOOL` | Invoke the move_to_folder operation. |
+| `archimate_neighbors` | `ARCHI_APITOOL` | Invoke the neighbors operation. |
+| `archimate_new_model` | `ARCHI_APITOOL` | Invoke the new_model operation. |
+| `archimate_relationship_types` | `ARCHI_APITOOL` | Invoke the relationship_types operation. |
+| `archimate_relationships_of` | `ARCHI_APITOOL` | Invoke the relationships_of operation. |
+| `archimate_save` | `ARCHI_APITOOL` | Invoke the save operation. |
+| `archimate_update_element` | `ARCHI_APITOOL` | Invoke the update_element operation. |
+| `archimate_update_relationship` | `ARCHI_APITOOL` | Invoke the update_relationship operation. |
+| `archimate_validate_relationship` | `ARCHI_APITOOL` | Return True if ``type`` is plausible between the given endpoints. |
+
+</details>
+
+_6 action-routed tool(s) (default) · 31 verbose 1:1 tool(s). Each is enabled unless its `<DOMAIN>TOOL` toggle is set false; `MCP_TOOL_MODE` selects the surface (`condensed` default · `verbose` 1:1 · `both`). Auto-generated — do not edit._
 <!-- MCP-TOOLS-TABLE:END -->
 
 ## Documentation
