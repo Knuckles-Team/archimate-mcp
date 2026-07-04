@@ -1,0 +1,27 @@
+{
+  "_comment": "Tier-1 mcp_tool source presets for archimate-mcp (AU-KG.ingest.mcp-tool-connector). Declarative: server + tool + field map; the connector lists via the tool and mirrors records into the KG with no agent-utilities code. Contributed presets win over the central MCP_TOOL_PRESETS. For rich typed ingestion (elements + relationships + views + edges) prefer the archimate_ingest_model tool / archimate_mcp.kg_ingest.",
+  "archimate-elements": {
+    "server": "archimate-mcp",
+    "tool": "archi_element",
+    "action": "list",
+    "params": { "params_json": "{}" },
+    "records_path": "",
+    "id_field": "id",
+    "title_field": "name",
+    "text_field": "documentation",
+    "type_field": "type",
+    "doc_type": "archimate-element"
+  },
+  "archimate-relationships": {
+    "server": "archimate-mcp",
+    "tool": "archi_relationship",
+    "action": "list",
+    "params": { "params_json": "{}" },
+    "records_path": "",
+    "id_field": "id",
+    "title_field": "name",
+    "text_field": "documentation",
+    "type_field": "type",
+    "doc_type": "archimate-relationship"
+  }
+}

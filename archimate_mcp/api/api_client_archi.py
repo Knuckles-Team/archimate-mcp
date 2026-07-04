@@ -59,6 +59,7 @@ class ArchiApi:
         target = path or self.model_path
         self.model = ArchiMateModel.from_open_exchange(target)
         self.model_path = target
+        self._auto_ingest()
         return self.model.summary()
 
     def save(self, path: str | None = None) -> dict:
@@ -74,10 +75,37 @@ class ArchiApi:
     def import_open_exchange(self, path: str) -> dict:
         self.model = ArchiMateModel.from_open_exchange(path)
         self.model_path = path
+        self._auto_ingest()
         return self.model.summary()
 
     def model_summary(self) -> dict:
         return self.model.summary()
+
+    # ------------------------------------------------------------------ #
+    # Native knowledge-graph ingestion (default-on, best-effort)
+    # ------------------------------------------------------------------ #
+    def ingest_to_kg(self) -> dict | None:
+        """Push the current model into epistemic-graph as typed OWL nodes.
+
+        Best-effort: returns ``None`` when no engine is reachable or the KG stack
+        is absent. CONCEPT:AU-KG.ingest.enterprise-source-extractor.
+        """
+        from archimate_mcp import kg_ingest
+
+        return kg_ingest.ingest_from_api(self)
+
+    def _auto_ingest(self) -> None:
+        """Default-on ingestion hook fired after a model is loaded/imported.
+
+        Disabled by setting ``ARCHI_KG_INGEST=0``. Never raises — a KG problem must
+        not break model loading.
+        """
+        if os.getenv("ARCHI_KG_INGEST", "1").lower() in {"0", "false", "no"}:
+            return
+        try:
+            self.ingest_to_kg()
+        except Exception:  # noqa: BLE001 — ingestion is best-effort
+            pass
 
     # ------------------------------------------------------------------ #
     # Elements

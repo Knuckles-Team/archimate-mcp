@@ -295,3 +295,33 @@ def register_archi_tools(mcp: FastMCP) -> None:
         if action == "relationship_types":
             return client.relationship_types()
         raise ValueError(f"Unknown query action: {action!r}.")
+
+    @mcp.tool(tags={"kg"})
+    async def archimate_ingest_model(
+        params_json: str = Field(
+            default="{}",
+            description=(
+                "Optional JSON, e.g. "
+                '{"path": "/tmp/m.archimate"} to load a model first, then ingest. '
+                "Omit to ingest the currently loaded model."
+            ),
+        ),
+    ) -> Any:
+        """Natively ingest the ArchiMate model into epistemic-graph as typed nodes.
+
+        Lists the model's elements, relationships and views via the model engine and
+        pushes them into the knowledge graph as ``:ArchimateElement`` subclass nodes
+        (``:ApplicationComponent``, ``:BusinessProcess``, …), reified
+        ``:ArchimateRelationship`` nodes + direct edges, and ``:ArchimateView`` nodes.
+        Best-effort: returns ``{"ingested": None}`` when no engine is reachable.
+        CONCEPT:AU-KG.ingest.enterprise-source-extractor.
+        """
+        from archimate_mcp import kg_ingest
+
+        client = get_client()
+        p = json.loads(params_json) if params_json else {}
+        if p.get("path"):
+            client.load(p["path"])
+        result = kg_ingest.ingest_from_api(client)
+        summary = client.model_summary()
+        return {"model": summary.get("counts"), "ingested": result}

@@ -8,6 +8,7 @@
 @prefix : <http://knuckles.team/kg#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
 :BusinessTask a owl:Class ;
     rdfs:label "Business Task" ;
@@ -79,3 +80,337 @@
     and ITSM Persons resolve to.""" ;
     rdfs:seeAlso <https://pubs.opengroup.org/architecture/archimate3-doc/chap08.html> .
 
+
+# =========================================================================== #
+# ArchiMate model-native ingestion classes (CONCEPT:AU-KG.ingest.enterprise-source-extractor)
+# ---------------------------------------------------------------------------
+# The archimate-mcp connector natively pushes every element, relationship and
+# view of an ArchiMate Open Exchange model into the KG as typed OWL nodes. Node
+# ``type`` values are the ArchiMate 3.x element-type names below (all subclasses
+# of :ArchimateElement, grouped by layer), so a single query resolves elements
+# across every ingested model. Ids follow ``archimate:<class>:<extId>``.
+# =========================================================================== #
+
+:ArchimateElement a owl:Class ;
+    rdfs:label "ArchiMate Element" ;
+    rdfs:comment """Root of the ArchiMate 3.x concept taxonomy: any node of an
+    ArchiMate model (business, application, technology, motivation, strategy,
+    physical or implementation). The vendor-neutral anchor every model element
+    ingested by archimate-mcp resolves to.""" ;
+    rdfs:seeAlso <https://pubs.opengroup.org/architecture/archimate3-doc/> .
+
+:ArchimateModel a owl:Class ;
+    rdfs:label "ArchiMate Model" ;
+    rdfs:comment "A whole ArchiMate model (an Open Exchange file) that owns elements, relationships and views." .
+
+:ArchimateRelationship a owl:Class ;
+    rdfs:label "ArchiMate Relationship" ;
+    rdfs:comment """A reified ArchiMate relationship (Serving, Realization,
+    Assignment, Composition, ...) captured as a node so its type, name and
+    endpoints are queryable; also projected as a direct LPG edge between the
+    endpoint elements.""" .
+
+:ArchimateView a owl:Class ;
+    rdfs:label "ArchiMate View" ;
+    rdfs:comment "A view (diagram) of an ArchiMate model referencing a subset of its elements and relationships." .
+
+# --- layer classes (subclasses of :ArchimateElement) ---
+:StrategyElement a owl:Class ; rdfs:label "Strategy Layer Element" ; rdfs:subClassOf :ArchimateElement .
+:BusinessLayerElement a owl:Class ; rdfs:label "Business Layer Element" ; rdfs:subClassOf :ArchimateElement .
+:ApplicationLayerElement a owl:Class ; rdfs:label "Application Layer Element" ; rdfs:subClassOf :ArchimateElement .
+:TechnologyLayerElement a owl:Class ; rdfs:label "Technology Layer Element" ; rdfs:subClassOf :ArchimateElement .
+:PhysicalElement a owl:Class ; rdfs:label "Physical Layer Element" ; rdfs:subClassOf :ArchimateElement .
+:MotivationElement a owl:Class ; rdfs:label "Motivation Element" ; rdfs:subClassOf :ArchimateElement .
+:ImplementationElement a owl:Class ; rdfs:label "Implementation & Migration Element" ; rdfs:subClassOf :ArchimateElement .
+:CompositeElement a owl:Class ; rdfs:label "Composite / Cross-layer Element" ; rdfs:subClassOf :ArchimateElement .
+
+
+# --- Strategy layer element types ---
+:Resource a owl:Class ;
+    rdfs:label "Resource" ;
+    rdfs:subClassOf :StrategyElement .
+:Capability a owl:Class ;
+    rdfs:label "Capability" ;
+    rdfs:subClassOf :StrategyElement .
+:CourseOfAction a owl:Class ;
+    rdfs:label "Course Of Action" ;
+    rdfs:subClassOf :StrategyElement .
+:ValueStream a owl:Class ;
+    rdfs:label "Value Stream" ;
+    rdfs:subClassOf :StrategyElement .
+
+# --- Business layer element types ---
+:BusinessActor rdfs:subClassOf :BusinessLayerElement .
+:BusinessRole a owl:Class ;
+    rdfs:label "Business Role" ;
+    rdfs:subClassOf :BusinessLayerElement .
+:BusinessCollaboration a owl:Class ;
+    rdfs:label "Business Collaboration" ;
+    rdfs:subClassOf :BusinessLayerElement .
+:BusinessInterface a owl:Class ;
+    rdfs:label "Business Interface" ;
+    rdfs:subClassOf :BusinessLayerElement .
+:BusinessProcess rdfs:subClassOf :BusinessLayerElement .
+:BusinessFunction a owl:Class ;
+    rdfs:label "Business Function" ;
+    rdfs:subClassOf :BusinessLayerElement .
+:BusinessInteraction a owl:Class ;
+    rdfs:label "Business Interaction" ;
+    rdfs:subClassOf :BusinessLayerElement .
+:BusinessEvent a owl:Class ;
+    rdfs:label "Business Event" ;
+    rdfs:subClassOf :BusinessLayerElement .
+:BusinessService a owl:Class ;
+    rdfs:label "Business Service" ;
+    rdfs:subClassOf :BusinessLayerElement .
+:BusinessObject a owl:Class ;
+    rdfs:label "Business Object" ;
+    rdfs:subClassOf :BusinessLayerElement .
+:Contract a owl:Class ;
+    rdfs:label "Contract" ;
+    rdfs:subClassOf :BusinessLayerElement .
+:Representation a owl:Class ;
+    rdfs:label "Representation" ;
+    rdfs:subClassOf :BusinessLayerElement .
+:Product a owl:Class ;
+    rdfs:label "Product" ;
+    rdfs:subClassOf :BusinessLayerElement .
+
+# --- Application layer element types ---
+:ApplicationComponent rdfs:subClassOf :ApplicationLayerElement .
+:ApplicationCollaboration a owl:Class ;
+    rdfs:label "Application Collaboration" ;
+    rdfs:subClassOf :ApplicationLayerElement .
+:ApplicationInterface a owl:Class ;
+    rdfs:label "Application Interface" ;
+    rdfs:subClassOf :ApplicationLayerElement .
+:ApplicationFunction a owl:Class ;
+    rdfs:label "Application Function" ;
+    rdfs:subClassOf :ApplicationLayerElement .
+:ApplicationInteraction a owl:Class ;
+    rdfs:label "Application Interaction" ;
+    rdfs:subClassOf :ApplicationLayerElement .
+:ApplicationProcess a owl:Class ;
+    rdfs:label "Application Process" ;
+    rdfs:subClassOf :ApplicationLayerElement .
+:ApplicationEvent rdfs:subClassOf :ApplicationLayerElement .
+:ApplicationService a owl:Class ;
+    rdfs:label "Application Service" ;
+    rdfs:subClassOf :ApplicationLayerElement .
+:DataObject a owl:Class ;
+    rdfs:label "Data Object" ;
+    rdfs:subClassOf :ApplicationLayerElement .
+
+# --- Technology layer element types ---
+:Node a owl:Class ;
+    rdfs:label "Node" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+:Device a owl:Class ;
+    rdfs:label "Device" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+:SystemSoftware a owl:Class ;
+    rdfs:label "System Software" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+:TechnologyCollaboration a owl:Class ;
+    rdfs:label "Technology Collaboration" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+:TechnologyInterface a owl:Class ;
+    rdfs:label "Technology Interface" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+:Path a owl:Class ;
+    rdfs:label "Path" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+:CommunicationNetwork a owl:Class ;
+    rdfs:label "Communication Network" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+:TechnologyFunction a owl:Class ;
+    rdfs:label "Technology Function" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+:TechnologyProcess a owl:Class ;
+    rdfs:label "Technology Process" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+:TechnologyInteraction a owl:Class ;
+    rdfs:label "Technology Interaction" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+:TechnologyEvent a owl:Class ;
+    rdfs:label "Technology Event" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+:TechnologyService a owl:Class ;
+    rdfs:label "Technology Service" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+:Artifact a owl:Class ;
+    rdfs:label "Artifact" ;
+    rdfs:subClassOf :TechnologyLayerElement .
+
+# --- Physical layer element types ---
+:Equipment a owl:Class ;
+    rdfs:label "Equipment" ;
+    rdfs:subClassOf :PhysicalElement .
+:Facility a owl:Class ;
+    rdfs:label "Facility" ;
+    rdfs:subClassOf :PhysicalElement .
+:DistributionNetwork a owl:Class ;
+    rdfs:label "Distribution Network" ;
+    rdfs:subClassOf :PhysicalElement .
+:Material a owl:Class ;
+    rdfs:label "Material" ;
+    rdfs:subClassOf :PhysicalElement .
+
+# --- Motivation layer element types ---
+:Stakeholder a owl:Class ;
+    rdfs:label "Stakeholder" ;
+    rdfs:subClassOf :MotivationElement .
+:Driver a owl:Class ;
+    rdfs:label "Driver" ;
+    rdfs:subClassOf :MotivationElement .
+:Assessment a owl:Class ;
+    rdfs:label "Assessment" ;
+    rdfs:subClassOf :MotivationElement .
+:Goal a owl:Class ;
+    rdfs:label "Goal" ;
+    rdfs:subClassOf :MotivationElement .
+:Outcome a owl:Class ;
+    rdfs:label "Outcome" ;
+    rdfs:subClassOf :MotivationElement .
+:Principle a owl:Class ;
+    rdfs:label "Principle" ;
+    rdfs:subClassOf :MotivationElement .
+:Requirement a owl:Class ;
+    rdfs:label "Requirement" ;
+    rdfs:subClassOf :MotivationElement .
+:Constraint a owl:Class ;
+    rdfs:label "Constraint" ;
+    rdfs:subClassOf :MotivationElement .
+:Meaning a owl:Class ;
+    rdfs:label "Meaning" ;
+    rdfs:subClassOf :MotivationElement .
+:Value a owl:Class ;
+    rdfs:label "Value" ;
+    rdfs:subClassOf :MotivationElement .
+
+# --- Implementation layer element types ---
+:WorkPackage a owl:Class ;
+    rdfs:label "Work Package" ;
+    rdfs:subClassOf :ImplementationElement .
+:Deliverable a owl:Class ;
+    rdfs:label "Deliverable" ;
+    rdfs:subClassOf :ImplementationElement .
+:ImplementationEvent a owl:Class ;
+    rdfs:label "Implementation Event" ;
+    rdfs:subClassOf :ImplementationElement .
+:Plateau a owl:Class ;
+    rdfs:label "Plateau" ;
+    rdfs:subClassOf :ImplementationElement .
+:Gap a owl:Class ;
+    rdfs:label "Gap" ;
+    rdfs:subClassOf :ImplementationElement .
+
+# --- Other layer element types ---
+:Location a owl:Class ;
+    rdfs:label "Location" ;
+    rdfs:subClassOf :CompositeElement .
+:Grouping a owl:Class ;
+    rdfs:label "Grouping" ;
+    rdfs:subClassOf :CompositeElement .
+:Junction a owl:Class ;
+    rdfs:label "Junction" ;
+    rdfs:subClassOf :CompositeElement .
+
+# --- ingestion object properties ---
+:hasElement a owl:ObjectProperty ;
+    rdfs:label "has element" ;
+    rdfs:comment "Links an :ArchimateModel to an :ArchimateElement it owns." ;
+    rdfs:domain :ArchimateModel ;
+    rdfs:range :ArchimateElement .
+
+:hasView a owl:ObjectProperty ;
+    rdfs:label "has view" ;
+    rdfs:comment "Links an :ArchimateModel to one of its :ArchimateView diagrams." ;
+    rdfs:domain :ArchimateModel ;
+    rdfs:range :ArchimateView .
+
+:depictsElement a owl:ObjectProperty ;
+    rdfs:label "depicts element" ;
+    rdfs:comment "Links an :ArchimateView to an :ArchimateElement it visualises." ;
+    rdfs:domain :ArchimateView ;
+    rdfs:range :ArchimateElement .
+
+:relSource a owl:ObjectProperty ;
+    rdfs:label "relationship source" ;
+    rdfs:comment "Links a reified :ArchimateRelationship to its source :ArchimateElement." ;
+    rdfs:domain :ArchimateRelationship ;
+    rdfs:range :ArchimateElement .
+
+:relTarget a owl:ObjectProperty ;
+    rdfs:label "relationship target" ;
+    rdfs:comment "Links a reified :ArchimateRelationship to its target :ArchimateElement." ;
+    rdfs:domain :ArchimateRelationship ;
+    rdfs:range :ArchimateElement .
+
+:archimateType a owl:DatatypeProperty ;
+    rdfs:label "archimate type" ;
+    rdfs:comment "The ArchiMate 3.x concept type name of an element or relationship (e.g. 'ApplicationComponent', 'Serving')." ;
+    rdfs:range xsd:string .
+
+:archimateLayer a owl:DatatypeProperty ;
+    rdfs:label "archimate layer" ;
+    rdfs:comment "The ArchiMate layer of an element (Business, Application, Technology, ...)." ;
+    rdfs:range xsd:string .
+
+
+# --- ArchiMate relationship types as object properties ---
+:relAccess a owl:ObjectProperty ;
+    rdfs:label "access" ;
+    rdfs:comment "ArchiMate Access relationship: a behaviour element accesses a data/object element." ;
+    rdfs:domain :ArchimateElement ;
+    rdfs:range :ArchimateElement .
+:relAggregation a owl:ObjectProperty ;
+    rdfs:label "aggregation" ;
+    rdfs:comment "ArchiMate Aggregation relationship: whole aggregates a part (weak ownership)." ;
+    rdfs:domain :ArchimateElement ;
+    rdfs:range :ArchimateElement .
+:relAssignment a owl:ObjectProperty ;
+    rdfs:label "assignment" ;
+    rdfs:comment "ArchiMate Assignment relationship: an active structure element is assigned to behaviour/an interface." ;
+    rdfs:domain :ArchimateElement ;
+    rdfs:range :ArchimateElement .
+:relAssociation a owl:ObjectProperty ;
+    rdfs:label "association" ;
+    rdfs:comment "ArchiMate Association relationship: an unspecified association between two elements." ;
+    rdfs:domain :ArchimateElement ;
+    rdfs:range :ArchimateElement .
+:relComposition a owl:ObjectProperty ;
+    rdfs:label "composition" ;
+    rdfs:comment "ArchiMate Composition relationship: whole is composed of a part (strong ownership)." ;
+    rdfs:domain :ArchimateElement ;
+    rdfs:range :ArchimateElement .
+:relFlow a owl:ObjectProperty ;
+    rdfs:label "flow" ;
+    rdfs:comment "ArchiMate Flow relationship: a transfer (of information/value) from one element to another." ;
+    rdfs:domain :ArchimateElement ;
+    rdfs:range :ArchimateElement .
+:relInfluence a owl:ObjectProperty ;
+    rdfs:label "influence" ;
+    rdfs:comment "ArchiMate Influence relationship: an element influences a motivation element." ;
+    rdfs:domain :ArchimateElement ;
+    rdfs:range :ArchimateElement .
+:relRealization a owl:ObjectProperty ;
+    rdfs:label "realization" ;
+    rdfs:comment "ArchiMate Realization relationship: a concrete element realizes a more abstract one (service/requirement)." ;
+    rdfs:domain :ArchimateElement ;
+    rdfs:range :ArchimateElement .
+:relServing a owl:ObjectProperty ;
+    rdfs:label "serving" ;
+    rdfs:comment "ArchiMate Serving relationship: an element serves (provides functionality to) another." ;
+    rdfs:domain :ArchimateElement ;
+    rdfs:range :ArchimateElement .
+:relSpecialization a owl:ObjectProperty ;
+    rdfs:label "specialization" ;
+    rdfs:comment "ArchiMate Specialization relationship: an element is a specialization (subtype) of another." ;
+    rdfs:domain :ArchimateElement ;
+    rdfs:range :ArchimateElement .
+:relTriggering a owl:ObjectProperty ;
+    rdfs:label "triggering" ;
+    rdfs:comment "ArchiMate Triggering relationship: a temporal/causal trigger from one behaviour to the next." ;
+    rdfs:domain :ArchimateElement ;
+    rdfs:range :ArchimateElement .

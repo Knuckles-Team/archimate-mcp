@@ -39,6 +39,12 @@ archimate-mcp = "archimate_mcp.prompts"
 [project.entry-points."agent_utilities.ontology_providers"]
 archimate-mcp = "archimate_mcp.ontology"
 
+# CONCEPT:AU-KG.ingest.mcp-tool-connector — contribute this package's Tier-1 mcp_tool
+# source presets (connectors/mcp_source_presets.json) so the hub can mirror ArchiMate
+# elements/relationships into the KG with no agent-utilities code change.
+[project.entry-points."agent_utilities.source_connector_providers"]
+archimate-mcp = "archimate_mcp.connectors"
+
 [tool.setuptools]
 include-package-data = true
 
@@ -55,7 +61,7 @@ check_untyped_defs = true
 dev = [ "pytest-timeout>=2.4.0",]
 
 [tool.setuptools.package-data]
-archimate_mcp = [ "mcp_config.json", "agent_data/**", "prompts/**", "skills/**", "ontology/**",]
+archimate_mcp = [ "mcp_config.json", "agent_data/**", "prompts/**", "skills/**", "ontology/**", "connectors/**",]
 
 [tool.ruff.lint]
 select = [ "E", "F", "I", "UP", "B",]
