@@ -33,6 +33,12 @@ archimate-mcp = "archimate_mcp.skills"
 [project.entry-points."agent_utilities.prompt_providers"]
 archimate-mcp = "archimate_mcp.prompts"
 
+# CONCEPT:KG-2.325 — federate this package's OWL/RDF ontology module into the
+# agent-utilities hub (ArchiMate elements, layers, relationships). Resolved via
+# iter_provider_dirs like the skill/prompt providers.
+[project.entry-points."agent_utilities.ontology_providers"]
+archimate-mcp = "archimate_mcp.ontology"
+
 [tool.setuptools]
 include-package-data = true
 
@@ -49,7 +55,7 @@ check_untyped_defs = true
 dev = [ "pytest-timeout>=2.4.0",]
 
 [tool.setuptools.package-data]
-archimate_mcp = [ "mcp_config.json", "agent_data/**", "prompts/**", "skills/**",]
+archimate_mcp = [ "mcp_config.json", "agent_data/**", "prompts/**", "skills/**", "ontology/**",]
 
 [tool.ruff.lint]
 select = [ "E", "F", "I", "UP", "B",]
