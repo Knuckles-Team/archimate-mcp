@@ -1,4 +1,4 @@
-"""ArchiMate modeling ontology contribution (CONCEPT:KG-2.325).
+"""ArchiMate modeling ontology contribution (CONCEPT:AU-KG.ontology.package-federation-migration).
 
 Data-only subpackage: it carries ``archimate.ttl`` (the ``owl:Ontology``
 ``http://knuckles.team/kg/archimate`` module — ArchiMate elements, layers and
