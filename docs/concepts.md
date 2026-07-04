@@ -3,4 +3,4 @@
 
 | Concept ID | Name | Description |
 |---|---|---|
-| `CONCEPT:ARCHI-001` | archi | MCP tool domain |
+| `CONCEPT:AM-OS.governance.archi` | archi | MCP tool domain |
