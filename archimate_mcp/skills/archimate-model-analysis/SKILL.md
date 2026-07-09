@@ -1,5 +1,6 @@
 ---
 name: archimate-model-analysis
+skill_type: skill
 description: >-
   Query, traverse, and validate an ArchiMate 3.x model through the archimate-mcp
   MCP server — list elements by type/layer, find by name, walk neighbors and

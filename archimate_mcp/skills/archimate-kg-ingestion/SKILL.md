@@ -1,5 +1,6 @@
 ---
 name: archimate-kg-ingestion
+skill_type: skill
 description: >-
   Natively mirror an ArchiMate 3.x model into the epistemic-graph knowledge graph
   via the archimate-mcp MCP server — every element becomes a typed OWL node

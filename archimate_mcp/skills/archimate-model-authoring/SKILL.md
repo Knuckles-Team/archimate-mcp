@@ -1,5 +1,6 @@
 ---
 name: archimate-model-authoring
+skill_type: skill
 description: >-
   Author ArchiMate 3.x enterprise-architecture models with the archimate-mcp MCP
   server — create the model, add typed elements (ApplicationComponent,
