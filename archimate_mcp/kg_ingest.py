@@ -7,16 +7,9 @@ nodes** — every element becomes an ``:ArchimateElement`` subclass node (``:App
 node **and** a direct LPG edge between its endpoints, and every view an ``:ArchimateView``
 node. The classes match those federated by :mod:`archimate_mcp.ontology`.
 
-Two write paths, resolved at call time:
-
-* Preferred — the shared fleet primitive
-  ``agent_utilities.knowledge_graph.memory.native_ingest`` (the ONE txn write path).
-* Fallback — a self-contained txn dance over ``GraphComputeEngine()._client`` (the
-  primitive is not yet in every installed ``agent_utilities``).
-
-Everything is dependency-/engine-guarded: with no KG stack or no reachable engine every
-entry point **no-ops** (returns ``None``), so the connector runs with zero KG
-infrastructure. Node ids follow ``archimate:<class>:<extId>``.
+Writes go directly through the required
+``agent_utilities.knowledge_graph.memory.native_ingest`` authority. Node ids follow
+``archimate:<class>:<extId>`` and structural fields use ``node_type`` / ``relationship``.
 """
 
 from __future__ import annotations
@@ -25,86 +18,24 @@ import logging
 import re
 from typing import Any
 
+from agent_utilities.knowledge_graph.memory.native_ingest import (
+    ingest_documents as _native_ingest_documents,
+)
+from agent_utilities.knowledge_graph.memory.native_ingest import (
+    ingest_entities as _native_ingest_entities,
+)
+
+from archimate_mcp.api.archimate_model import LAYER_OF_TYPE
+
 logger = logging.getLogger("archimate_mcp.kg")
 
 _SOURCE = "archimate-mcp"
 _DOMAIN = "archimate"
-_DEFAULT_GRAPH = "__commons__"
 
 
-# --------------------------------------------------------------------------- #
-# Engine client resolution + write paths (shared-primitive-first, fallback)
-# --------------------------------------------------------------------------- #
 def _layer_of(elem_type: str) -> str | None:
-    """Return the ArchiMate layer of ``elem_type`` (best-effort, import-guarded)."""
-    try:
-        from archimate_mcp.api.archimate_model import LAYER_OF_TYPE
-
-        return LAYER_OF_TYPE.get(elem_type)
-    except Exception:  # noqa: BLE001 — vocabulary import optional
-        return None
-
-
-def _client() -> tuple[Any | None, str]:
-    """Return ``(engine_client, graph_name)`` or ``(None, "")`` when unavailable."""
-    try:
-        from agent_utilities.knowledge_graph.core.graph_compute import (
-            GraphComputeEngine,
-        )
-    except Exception as e:  # noqa: BLE001 — KG stack absent
-        logger.debug("KG ingest unavailable (import): %s", e)
-        return None, ""
-    try:
-        engine = GraphComputeEngine()
-        client = getattr(engine, "_client", None)
-        if client is None:
-            return None, ""
-        return client, (getattr(engine, "graph_name", None) or _DEFAULT_GRAPH)
-    except Exception as e:  # noqa: BLE001 — engine unreachable
-        logger.debug("KG ingest: engine unreachable: %s", e)
-        return None, ""
-
-
-def _fallback_write(
-    nodes: list[dict[str, Any]],
-    relationships: list[dict[str, Any]] | None,
-    *,
-    client: Any,
-    graph: str,
-) -> dict[str, int] | None:
-    """Self-contained txn write used when the shared primitive is unavailable."""
-    nodes = [n for n in nodes if n.get("id")]
-    if not nodes:
-        return None
-    try:
-        txn = client.txn.begin(graph=graph)
-        for node in nodes:
-            props = {k: v for k, v in node.items() if k != "id" and v is not None}
-            props.setdefault("source", _SOURCE)
-            props.setdefault("domain", _DOMAIN)
-            client.txn.add_node(txn, node["id"], props)
-        committed = client.txn.commit(txn)
-    except Exception as e:  # noqa: BLE001 — engine/txn failure is non-fatal
-        logger.warning("KG ingest: txn failed: %s", e)
-        return None
-    if not committed:
-        logger.warning("KG ingest: txn not committed (conflict)")
-        return None
-
-    edges = 0
-    for rel in relationships or []:
-        try:
-            client.edges.add(
-                rel["source"],
-                rel["target"],
-                {"type": rel.get("type", "RELATED")},
-            )
-            edges += 1
-        except Exception as e:  # noqa: BLE001 — pure edge link, best-effort
-            logger.debug("KG ingest: edge skipped: %s", e)
-
-    logger.info("KG ingest: wrote %d nodes, %d edges", len(nodes), edges)
-    return {"nodes": len(nodes), "edges": edges}
+    """Return the ArchiMate layer of ``elem_type``."""
+    return LAYER_OF_TYPE.get(elem_type)
 
 
 def ingest_entities(
@@ -115,40 +46,18 @@ def ingest_entities(
     domain: str = _DOMAIN,
     client: Any | None = None,
     graph: str | None = None,
-) -> dict[str, int] | None:
+) -> dict[str, int]:
     """Write typed OWL nodes (+ edges) into the engine.
 
-    Prefers the shared ``native_ingest`` primitive; falls back to a self-contained
-    txn write. ``client``/``graph`` may be injected (tests); otherwise resolved via
-    the lightweight engine client. Returns ``{"nodes":n,"edges":m}`` or ``None``.
+    Validation and engine failures are surfaced as ``NativeIngestError``.
     """
-    entities = [e for e in (entities or []) if e.get("id")]
-    if not entities:
-        return None
-
-    # Preferred path: the shared fleet primitive (the ONE txn write path).
-    if client is None:
-        try:
-            from agent_utilities.knowledge_graph.memory.native_ingest import (
-                ingest_entities as _shared,
-            )
-
-            return _shared(
-                entities,
-                relationships,
-                source=source,
-                domain=domain,
-            )
-        except Exception as e:  # noqa: BLE001 — primitive absent / failed → fallback
-            logger.debug("KG ingest: shared primitive unavailable: %s", e)
-
-    # Fallback path: resolve a client ourselves and do the txn dance.
-    if client is None:
-        client, graph = _client()
-    if client is None:
-        return None
-    return _fallback_write(
-        entities, relationships, client=client, graph=graph or _DEFAULT_GRAPH
+    return _native_ingest_entities(
+        entities,
+        relationships,
+        source=source,
+        domain=domain,
+        client=client,
+        graph=graph,
     )
 
 
@@ -159,32 +68,14 @@ def ingest_documents(
     domain: str = _DOMAIN,
     client: Any | None = None,
     graph: str | None = None,
-) -> dict[str, int] | None:
+) -> dict[str, int]:
     """Write free-text ``:Document`` nodes (element/view documentation) for search.
 
-    ``docs``: ``[{"id":..., "title":..., "text":..., "source_uri":...}]``. Prefers the
-    shared primitive; falls back to typed-node write with ``type="Document"``.
+    ``docs``: ``[{"id":..., "title":..., "text":..., "source_uri":...}]``.
     """
-    docs = [d for d in (docs or []) if d.get("id") and d.get("text")]
-    if not docs:
-        return None
-
-    if client is None:
-        try:
-            from agent_utilities.knowledge_graph.memory.native_ingest import (
-                ingest_documents as _shared_docs,
-            )
-
-            return _shared_docs(docs, source=source, domain=domain)
-        except Exception as e:  # noqa: BLE001 — primitive absent → fallback
-            logger.debug("KG ingest: shared doc primitive unavailable: %s", e)
-
-    nodes = [{**d, "type": "Document"} for d in docs]
-    if client is None:
-        client, graph = _client()
-    if client is None:
-        return None
-    return _fallback_write(nodes, None, client=client, graph=graph or _DEFAULT_GRAPH)
+    return _native_ingest_documents(
+        docs, source=source, domain=domain, client=client, graph=graph
+    )
 
 
 # --------------------------------------------------------------------------- #
@@ -222,7 +113,7 @@ def build_model_graph(
     entities.append(
         {
             "id": model_nid,
-            "type": "ArchimateModel",
+            "node_type": "ArchimateModel",
             "name": model_name,
             "documentation": model.get("documentation") or None,
             "externalToolId": str(model_ext),
@@ -236,30 +127,32 @@ def build_model_graph(
         etype = elem.get("type")
         if not eid or not etype:
             continue
-        nid = _node_id(etype, eid)
-        elem_nid[eid] = nid
+        eid_key = str(eid)
+        etype_name = str(etype)
+        nid = _node_id(etype_name, eid_key)
+        elem_nid[eid_key] = nid
         entities.append(
             {
                 "id": nid,
-                "type": etype,
+                "node_type": etype_name,
                 "name": elem.get("name") or None,
                 "documentation": elem.get("documentation") or None,
-                "archimateType": etype,
-                "archimateLayer": elem.get("layer") or _layer_of(etype),
-                "externalToolId": str(eid),
+                "archimateType": etype_name,
+                "archimateLayer": elem.get("layer") or _layer_of(etype_name),
+                "externalToolId": eid_key,
             }
         )
-        edges.append({"source": model_nid, "target": nid, "type": "hasElement"})
+        edges.append({"source": model_nid, "target": nid, "relationship": "hasElement"})
         doc = (elem.get("documentation") or "").strip()
         if doc:
             documents.append(
                 {
                     "id": f"{nid}:doc",
-                    "type": "Document",
-                    "title": elem.get("name") or etype,
+                    "document_type": "archimate_element",
+                    "title": elem.get("name") or etype_name,
                     "text": doc,
                     "source_uri": nid,
-                    "archimateType": etype,
+                    "archimateType": etype_name,
                 }
             )
 
@@ -270,43 +163,59 @@ def build_model_graph(
         tgt = rel.get("target")
         if not rid or not rtype:
             continue
-        rnid = _node_id("relationship", rid)
-        src_nid = elem_nid.get(src)
-        tgt_nid = elem_nid.get(tgt)
+        rid_key = str(rid)
+        relationship_type = str(rtype)
+        rnid = _node_id("relationship", rid_key)
+        src_nid = elem_nid.get(str(src)) if src is not None else None
+        tgt_nid = elem_nid.get(str(tgt)) if tgt is not None else None
         entities.append(
             {
                 "id": rnid,
-                "type": "ArchimateRelationship",
+                "node_type": "ArchimateRelationship",
                 "name": rel.get("name") or None,
-                "archimateType": rtype,
+                "archimateType": relationship_type,
                 "relSource": src_nid,
                 "relTarget": tgt_nid,
-                "externalToolId": str(rid),
+                "externalToolId": rid_key,
             }
         )
         # Direct element-to-element edge carrying the ArchiMate relationship type.
         if src_nid and tgt_nid:
-            edges.append({"source": src_nid, "target": tgt_nid, "type": rtype})
+            edges.append(
+                {
+                    "source": src_nid,
+                    "target": tgt_nid,
+                    "relationship": relationship_type,
+                }
+            )
 
     for view in views or []:
         vid = view.get("id")
         if not vid:
             continue
-        vnid = _node_id("view", vid)
+        vid_key = str(vid)
+        vnid = _node_id("view", vid_key)
         entities.append(
             {
                 "id": vnid,
-                "type": "ArchimateView",
+                "node_type": "ArchimateView",
                 "name": view.get("name") or None,
                 "documentation": view.get("documentation") or None,
-                "externalToolId": str(vid),
+                "externalToolId": vid_key,
             }
         )
-        edges.append({"source": model_nid, "target": vnid, "type": "hasView"})
+        edges.append({"source": model_nid, "target": vnid, "relationship": "hasView"})
         for node in view.get("nodes", []) or []:
-            ref = elem_nid.get(node.get("element_ref"))
+            element_ref = node.get("element_ref")
+            ref = elem_nid.get(str(element_ref)) if element_ref is not None else None
             if ref:
-                edges.append({"source": vnid, "target": ref, "type": "depictsElement"})
+                edges.append(
+                    {
+                        "source": vnid,
+                        "target": ref,
+                        "relationship": "depictsElement",
+                    }
+                )
 
     return entities, edges, documents
 
@@ -319,19 +228,21 @@ def ingest_model(
     *,
     client: Any | None = None,
     graph: str | None = None,
-) -> dict[str, int] | None:
+) -> dict[str, int]:
     """Map ArchiMate model records and push them into the KG.
 
-    Returns ``{"nodes":n,"edges":m,"documents":d}`` or ``None`` (no engine).
+    Returns ``{"nodes":n,"edges":m,"documents":d}`` or raises on failure.
     """
     entities, edges, documents = build_model_graph(
         elements, relationships, views, model
     )
     res = ingest_entities(entities, edges, client=client, graph=graph)
-    if res is None:
-        return None
-    doc_res = ingest_documents(documents, client=client, graph=graph)
-    res["documents"] = (doc_res or {}).get("nodes", 0)
+    doc_res = (
+        ingest_documents(documents, client=client, graph=graph)
+        if documents
+        else {"nodes": 0}
+    )
+    res["documents"] = doc_res["nodes"]
     return res
 
 
@@ -340,20 +251,15 @@ def ingest_from_api(
     *,
     client: Any | None = None,
     graph: str | None = None,
-) -> dict[str, int] | None:
+) -> dict[str, int]:
     """List the current model via an :class:`ArchiApi` and ingest it.
 
-    Best-effort: any listing error yields ``None`` (never raises). Used both by the
-    Wire-First MCP tool and the default-on auto-ingest hook on model load.
+    Source and native-ingestion failures propagate to the caller.
     """
-    try:
-        elements = api.list_elements()
-        relationships = api.list_relationships()
-        views = api.list_views()
-        model = api.model_summary()
-    except Exception as e:  # noqa: BLE001 — listing failure is non-fatal
-        logger.debug("KG ingest: could not list model: %s", e)
-        return None
+    elements = api.list_elements()
+    relationships = api.list_relationships()
+    views = api.list_views()
+    model = api.model_summary()
     return ingest_model(
         elements, relationships, views, model, client=client, graph=graph
     )

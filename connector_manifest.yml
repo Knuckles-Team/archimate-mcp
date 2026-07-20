@@ -747,6 +747,7 @@ sync:
   updated_field: null
   pagination: null
   doc_type: archimate-element
+  tool_schema_sha256: b8ddbc22df54353480a9724c58a733d0f6798526e8af755303a3a850517b8cc8
   raw:
     server: archimate-mcp
     tool: archi_element
@@ -770,6 +771,7 @@ sync:
   updated_field: null
   pagination: null
   doc_type: archimate-relationship
+  tool_schema_sha256: 0280cde5322dd2e3b45326483c9702e46ef1b2a2648a35d24f2b8fb52137c19d
   raw:
     server: archimate-mcp
     tool: archi_relationship
@@ -784,17 +786,20 @@ sync:
     doc_type: archimate-relationship
 provenance:
   generated_by: scripts/generate_connector_manifests.py
-  generated_at: '2026-07-09T00:00:00Z'
+  generated_at: '2026-07-18T00:00:00Z'
   source_artifacts:
   - a2a.json
   - archimate_mcp/connectors/mcp_source_presets.json
+  - archimate_mcp/connectors/tool_schema_fingerprints.json
   - archimate_mcp/ontology/archimate.ttl
   integrity:
     algorithm: urdna2015-sha256
     hash: 5c23ea227bbd105fc4dd0e3ddaf7442fa5bd424ade712502f07688a56cfa8a5c
     triple_count: 358
   signer: ontology-manifest-generator
-  signature: 19a7e822b44ced9146975efc7314e9b1ea04f48012bb39a0ec6b8fadac218ba6
+  signature_algorithm: ed25519
+  signing_public_key: q0Cp7bmQMqJhbofGKKw8xXC6KbFzukBDDke0UYVi8y4
+  signature: ENu99NpE4JC1-SPCaBE4M17qs934Xc507aOl5P-jYPfmiDpiSjYzWoH7FbTOwXbNnHfgylKeAFTarbPBrYZpBA
 policy:
   pii_fields: {}
   tenant_boundary: null

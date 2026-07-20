@@ -7,9 +7,9 @@ package ships a self-contained ArchiMate model engine that agents can drive.
 The engine round-trips through the Open Group **ArchiMate Model Exchange File
 Format** (namespace ``http://www.opengroup.org/xsd/archimate/3.0/``) — the
 interoperable XML that Archi reads and writes via
-*File > Import/Export > "Model Exchange File Format"*. Only the Python
-standard library (``xml.etree.ElementTree``) is used, so there is no lxml
-build dependency.
+*File > Import/Export > "Model Exchange File Format"*. Serialization uses the
+Python standard library while untrusted imports use ``defusedxml``; there is no
+native ``lxml`` build dependency.
 """
 
 from __future__ import annotations
@@ -18,6 +18,8 @@ import uuid
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from typing import Any
+
+from archimate_mcp.api.xml_security import parse_exchange_root
 
 # --------------------------------------------------------------------------- #
 # Vocabulary — ArchiMate 3.x element types, grouped by layer.
@@ -442,8 +444,7 @@ class ArchiMateModel:
     @classmethod
     def from_open_exchange(cls, path: str) -> ArchiMateModel:
         """Load a model from an Open Exchange Format XML file."""
-        tree = ET.parse(path)
-        root = tree.getroot()
+        root = parse_exchange_root(path)
         model = cls()
         model.id = root.get("identifier") or model.id
 

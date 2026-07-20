@@ -1,0 +1,31 @@
+schema_version: '1'
+connector: archimate-mcp
+ontology_source: archimate
+sync:
+- preset: archimate-elements
+  server: archimate-mcp
+  tool: archi_element
+  action: list
+  records_path: ''
+  id_field: id
+  title_field: name
+  text_field: documentation
+  updated_field: null
+  doc_type: archimate-element
+  tool_schema_sha256: b8ddbc22df54353480a9724c58a733d0f6798526e8af755303a3a850517b8cc8
+- preset: archimate-relationships
+  server: archimate-mcp
+  tool: archi_relationship
+  action: list
+  records_path: ''
+  id_field: id
+  title_field: name
+  text_field: documentation
+  updated_field: null
+  doc_type: archimate-relationship
+  tool_schema_sha256: 0280cde5322dd2e3b45326483c9702e46ef1b2a2648a35d24f2b8fb52137c19d
+governance:
+  default_acl: quarantine
+  identity: opaque-reference
+  tenant: required-at-materialization
+  provenance: required-at-materialization

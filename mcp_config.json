@@ -7,8 +7,9 @@
         "archimate-mcp"
       ],
       "env": {
-        "MCP_TOOL_MODE": "condensed",
+        "MCP_TOOL_MODE": "intent",
         "ARCHITOOL": "True",
+        "ARCHI_KG_INGEST": "1",
         "ARCHI_MODEL_PATH": "./model.archimate"
       }
     }

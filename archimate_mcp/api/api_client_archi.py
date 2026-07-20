@@ -82,13 +82,13 @@ class ArchiApi:
         return self.model.summary()
 
     # ------------------------------------------------------------------ #
-    # Native knowledge-graph ingestion (default-on, best-effort)
+    # Native knowledge-graph ingestion (default-on, authoritative)
     # ------------------------------------------------------------------ #
     def ingest_to_kg(self) -> dict | None:
         """Push the current model into epistemic-graph as typed OWL nodes.
 
-        Best-effort: returns ``None`` when no engine is reachable or the KG stack
-        is absent. CONCEPT:AU-KG.ingest.enterprise-source-extractor.
+        Native ingestion failures propagate to the caller.
+        CONCEPT:AU-KG.ingest.enterprise-source-extractor.
         """
         from archimate_mcp import kg_ingest
 
@@ -97,15 +97,12 @@ class ArchiApi:
     def _auto_ingest(self) -> None:
         """Default-on ingestion hook fired after a model is loaded/imported.
 
-        Disabled by setting ``ARCHI_KG_INGEST=0``. Never raises — a KG problem must
-        not break model loading.
+        Disabled by setting ``ARCHI_KG_INGEST=0``. When enabled, native ingestion is
+        authoritative and failures propagate.
         """
         if os.getenv("ARCHI_KG_INGEST", "1").lower() in {"0", "false", "no"}:
             return
-        try:
-            self.ingest_to_kg()
-        except Exception:  # noqa: BLE001 — ingestion is best-effort
-            pass
+        self.ingest_to_kg()
 
     # ------------------------------------------------------------------ #
     # Elements

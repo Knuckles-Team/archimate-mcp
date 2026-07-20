@@ -1,13 +1,22 @@
 """Native epistemic-graph typed-node ingestion — Wire-First coverage.
 
 Exercises the real ``build_model_graph`` mapper + ``ingest_entities`` / ``ingest_model``
-/ ``ingest_from_api`` seams with a fake engine client and a fake ArchiApi (no engine
-required), asserting the txn add_node/commit + edge calls and the ArchiMate element →
+/ ``ingest_from_api`` seams with a fake ChangeEnvelope client and a fake ArchiApi (no
+engine required), asserting the governed atomic write and the ArchiMate element →
 :ApplicationComponent / relationship → :ArchimateRelationship mapping.
 CONCEPT:AU-KG.ingest.enterprise-source-extractor.
 """
 
 from __future__ import annotations
+
+from typing import Any
+
+import msgpack
+import pytest
+from agent_utilities.knowledge_graph.core.session import GraphSession, use_session
+from agent_utilities.knowledge_graph.memory.native_ingest import NativeIngestError
+from agent_utilities.models.company_brain import ActorType
+from agent_utilities.security.brain_context import ActorContext, use_actor
 
 from archimate_mcp.kg_ingest import (
     build_model_graph,
@@ -17,35 +26,92 @@ from archimate_mcp.kg_ingest import (
 )
 
 
-class _FakeTxn:
-    def __init__(self):
-        self.nodes = {}
-        self.committed = False
+@pytest.fixture(autouse=True)
+def _governed_session():
+    actor = ActorContext(
+        actor_id="subject:opaque:synthetic",
+        actor_type=ActorType.AUTOMATED_SERVICE,
+        roles=(),
+        tenant_id="tenant:opaque:synthetic",
+        authenticated=True,
+    )
+    session = GraphSession(
+        actor=actor,
+        tenant=actor.tenant_id,
+        scopes=frozenset({"kg:write"}),
+        graph="graph:opaque:synthetic",
+        policy_version="policy:opaque:synthetic",
+        audience="epistemic-graph",
+    )
+    with use_actor(actor), use_session(session):
+        yield
 
-    def begin(self, graph=None):
-        self.graph = graph
-        return "txn-1"
 
-    def add_node(self, txn, node_id, props):
-        self.nodes[node_id] = props
+class _FakeNodes:
+    def __init__(self) -> None:
+        self.values: dict[str, dict[str, Any]] = {}
 
-    def commit(self, txn):
-        self.committed = True
-        return True
+    def properties(self, node_id: str) -> dict[str, Any] | None:
+        return self.values.get(node_id)
+
+    def list(self) -> list[tuple[str, dict[str, Any]]]:
+        return list(self.values.items())
 
 
-class _FakeEdges:
-    def __init__(self):
-        self.edges = []
+class _FakeChanges:
+    def __init__(self, nodes: _FakeNodes) -> None:
+        self.nodes = nodes
+        self.edges: list[tuple[str, str, dict[str, Any]]] = []
+        self.applied: list[dict[str, Any]] = []
+        self.records: dict[str, dict[str, Any]] = {}
+        self.versions: dict[str, dict[str, Any]] = {}
 
-    def add(self, src, dst, props):
-        self.edges.append((src, dst, props))
+    def get(self, envelope_id: str) -> dict[str, Any] | None:
+        return self.records.get(envelope_id)
+
+    def content_version(self, object_id: str) -> dict[str, Any] | None:
+        return self.versions.get(object_id)
+
+    def cursor(self, _source: str, _partition: str = "") -> None:
+        return None
+
+    def apply(self, envelope: dict[str, Any]) -> dict[str, Any]:
+        self.applied.append(envelope)
+        mutation = envelope["mutation"]
+        for operation in mutation["operations"]:
+            method = operation["method"]
+            params = method["params"]
+            properties = msgpack.unpackb(params["properties_msgpack"], raw=False)
+            if method["method"] == "AddNode":
+                self.nodes.values[params["node_id"]] = properties
+            elif method["method"] == "AddEdge":
+                self.edges.append(
+                    (params["source_id"], params["target_id"], properties)
+                )
+        version = envelope["content_version"]
+        self.versions[version["object_id"]] = version
+        self.records[envelope["envelope_id"]] = envelope
+        return {
+            "batch_id": mutation["batch_id"],
+            "replayed": False,
+            "projection_pending": False,
+        }
+
+
+class _FakeRdf:
+    def validate_shacl(self, _shapes: str, _data_graph: str) -> dict[str, Any]:
+        return {"conforms": True, "results": []}
 
 
 class _FakeClient:
-    def __init__(self):
-        self.txn = _FakeTxn()
-        self.edges = _FakeEdges()
+    def __init__(self) -> None:
+        self.nodes = _FakeNodes()
+        self.changes = _FakeChanges(self.nodes)
+        self.rdf = _FakeRdf()
+
+    @staticmethod
+    def supports(operation: str) -> bool:
+        return operation == "ApplyChangeEnvelope"
 
 
 class _FakeApi:
@@ -101,30 +167,60 @@ def test_build_model_graph_maps_elements_relationships_views():
     by_id = {e["id"]: e for e in entities}
 
     # model + 2 elements + 1 relationship + 1 view
-    assert by_id["archimate:model:model-1"]["type"] == "ArchimateModel"
+    assert by_id["archimate:model:model-1"]["node_type"] == "ArchimateModel"
     ac = by_id["archimate:applicationcomponent:elem-a"]
-    assert ac["type"] == "ApplicationComponent"
+    assert ac["node_type"] == "ApplicationComponent"
     assert ac["archimateType"] == "ApplicationComponent"
     assert ac["archimateLayer"] == "Application"
     assert ac["externalToolId"] == "elem-a"
     rel = by_id["archimate:relationship:rel-1"]
-    assert rel["type"] == "ArchimateRelationship"
+    assert rel["node_type"] == "ArchimateRelationship"
     assert rel["archimateType"] == "Serving"
     assert rel["relSource"] == "archimate:applicationcomponent:elem-a"
-    assert by_id["archimate:view:view-1"]["type"] == "ArchimateView"
+    assert by_id["archimate:view:view-1"]["node_type"] == "ArchimateView"
 
     # direct Serving edge between the two elements + hasElement/hasView/depictsElement
     assert (
         "archimate:applicationcomponent:elem-a",
         "archimate:applicationservice:elem-b",
         "Serving",
-    ) in {(e["source"], e["target"], e["type"]) for e in edges}
-    edge_types = {e["type"] for e in edges}
+    ) in {(e["source"], e["target"], e["relationship"]) for e in edges}
+    edge_types = {e["relationship"] for e in edges}
     assert {"hasElement", "hasView", "depictsElement", "Serving"} <= edge_types
 
     # documentation becomes a :Document node
-    assert docs and docs[0]["type"] == "Document"
+    assert docs and docs[0]["document_type"] == "archimate_element"
     assert docs[0]["text"] == "Issues invoices"
+
+
+def test_build_model_graph_normalizes_external_identifiers():
+    entities, edges, _documents = build_model_graph(
+        [{"id": 7, "type": "ApplicationComponent", "name": "Synthetic"}],
+        [{"id": 8, "type": "Serving", "source": 7, "target": "7"}],
+        [{"id": 9, "nodes": [{"element_ref": 7}]}],
+        {"id": 10, "name": "Synthetic model"},
+    )
+
+    assert {entity["id"] for entity in entities} >= {
+        "archimate:model:10",
+        "archimate:applicationcomponent:7",
+        "archimate:relationship:8",
+        "archimate:view:9",
+    }
+    assert {
+        (edge["source"], edge["target"], edge["relationship"]) for edge in edges
+    } >= {
+        (
+            "archimate:applicationcomponent:7",
+            "archimate:applicationcomponent:7",
+            "Serving",
+        ),
+        (
+            "archimate:view:9",
+            "archimate:applicationcomponent:7",
+            "depictsElement",
+        ),
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -134,26 +230,26 @@ def test_ingest_entities_writes_nodes_and_edges():
     c = _FakeClient()
     res = ingest_entities(
         [
-            {"id": "archimate:model:m1", "type": "ArchimateModel", "name": "m"},
-            {"id": "archimate:node:n1", "type": "Node"},
+            {"id": "archimate:model:m1", "node_type": "ArchimateModel", "name": "m"},
+            {"id": "archimate:node:n1", "node_type": "Node"},
         ],
         [
             {
                 "source": "archimate:model:m1",
                 "target": "archimate:node:n1",
-                "type": "hasElement",
+                "relationship": "hasElement",
             }
         ],
         client=c,
-        graph="__commons__",
+        graph="graph:opaque:synthetic",
     )
     assert res == {"nodes": 2, "edges": 1}
-    assert c.txn.committed is True
-    assert set(c.txn.nodes) == {"archimate:model:m1", "archimate:node:n1"}
+    assert len(c.changes.applied) == 1
+    assert set(c.nodes.values) == {"archimate:model:m1", "archimate:node:n1"}
     # provenance is stamped
-    assert c.txn.nodes["archimate:model:m1"]["source"] == "archimate-mcp"
-    assert c.txn.nodes["archimate:model:m1"]["domain"] == "archimate"
-    assert c.edges.edges[0][2] == {"type": "hasElement"}
+    assert c.nodes.values["archimate:model:m1"]["source"] == "archimate-mcp"
+    assert c.nodes.values["archimate:model:m1"]["domain"] == "archimate"
+    assert c.changes.edges[0][2] == {"relationship": "hasElement"}
 
 
 def test_ingest_model_end_to_end_with_fake_client():
@@ -169,7 +265,7 @@ def test_ingest_model_end_to_end_with_fake_client():
     # model + 2 elements + 1 relationship + 1 view = 5 nodes
     assert res["nodes"] == 5
     assert res["documents"] == 1
-    assert c.txn.nodes["archimate:applicationcomponent:elem-a"]["type"] == (
+    assert c.nodes.values["archimate:applicationcomponent:elem-a"]["node_type"] == (
         "ApplicationComponent"
     )
 
@@ -179,19 +275,17 @@ def test_ingest_from_api_lists_and_pushes():
     res = ingest_from_api(_FakeApi(), client=c)
     assert res is not None
     assert res["nodes"] == 5
-    assert "archimate:relationship:rel-1" in c.txn.nodes
+    assert "archimate:relationship:rel-1" in c.nodes.values
 
 
 # --------------------------------------------------------------------------- #
 # Guarded no-ops
 # --------------------------------------------------------------------------- #
-def test_ingest_noops_without_engine():
-    # No injected client + no reachable engine -> clean no-op (never raises).
-    # Returns None (no engine) or a dict (engine happened to be reachable); never raises.
-    res = ingest_entities([{"id": "archimate:node:n1", "type": "Node"}], client=None)
-    assert res is None or isinstance(res, dict)
+def test_ingest_rejects_legacy_structural_fields():
+    with pytest.raises(NativeIngestError, match="canonical node_type"):
+        ingest_entities([{"id": "legacy", "type": "Legacy"}], client=_FakeClient())
 
 
-def test_ingest_empty_is_noop():
-    assert ingest_entities([], client=_FakeClient()) is None
-    assert build_model_graph([], [], [], {})[0][0]["type"] == "ArchimateModel"
+def test_ingest_empty_is_rejected():
+    with pytest.raises(NativeIngestError, match="at least one entity"):
+        ingest_entities([], client=_FakeClient())

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-import os
 import ast
 import glob
+import os
 import sys
 
 BASELINES = {
@@ -35,7 +35,7 @@ def parse_api_client(filepath):
     Parses api_client.py to find the main API/Client class and its public methods.
     Returns a set of method names.
     """
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, encoding="utf-8") as f:
         tree = ast.parse(f.read(), filename=filepath)
 
     methods = {}
@@ -82,7 +82,7 @@ class MethodCallVisitor(ast.NodeVisitor):
 
     def visit_Compare(self, node):
         # Capture action comparisons, e.g. action == "get"
-        for op, comparator in zip(node.ops, node.comparators):
+        for op, comparator in zip(node.ops, node.comparators, strict=False):
             if isinstance(op, (ast.Eq, ast.In)):
                 if isinstance(comparator, ast.Constant) and isinstance(
                     comparator.value, str
@@ -96,7 +96,7 @@ def parse_mcp_server(filepath, api_methods):
     Parses mcp_server.py to extract registered tools and identify which
     api_methods they leverage.
     """
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, encoding="utf-8") as f:
         tree = ast.parse(f.read(), filename=filepath)
 
     tool_mappings = {}
@@ -218,7 +218,7 @@ def main():
             sys.exit(0)
 
     # --- Default Mode (Workspace-wide Scan) ---
-    agents_dir = "/home/apps/workspace/agent-packages/agents"
+    agents_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
     agent_dirs = [
         d for d in glob.glob(os.path.join(agents_dir, "*")) if os.path.isdir(d)
     ]
@@ -243,7 +243,7 @@ def main():
             if res:
                 results.append(res)
         except Exception as e:
-            print(f"Error parsing {agent_dir}: {e}", file=sys.stderr)
+            print(f"Operation failed: {type(e).__name__}", file=sys.stderr)
 
     # Print a beautiful report
     print("# API to MCP Integration Parity Report")

@@ -1,0 +1,34 @@
+{
+  "connector": "archimate-mcp",
+  "fixtures": [
+    {
+      "expected": {
+        "acl_state": "quarantine",
+        "id": "fixture-record",
+        "title": "Synthetic certification record"
+      },
+      "preset": "archimate-elements",
+      "record": {
+        "acl_public": false,
+        "documentation": "Synthetic content used only for contract validation.",
+        "id": "fixture-record",
+        "name": "Synthetic certification record"
+      }
+    },
+    {
+      "expected": {
+        "acl_state": "quarantine",
+        "id": "fixture-record",
+        "title": "Synthetic certification record"
+      },
+      "preset": "archimate-relationships",
+      "record": {
+        "acl_public": false,
+        "documentation": "Synthetic content used only for contract validation.",
+        "id": "fixture-record",
+        "name": "Synthetic certification record"
+      }
+    }
+  ],
+  "schema_version": "1"
+}

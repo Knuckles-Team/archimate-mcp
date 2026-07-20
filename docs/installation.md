@@ -22,7 +22,7 @@ The base install is intentionally minimal. Install the extra for what you need:
 | Extra | Install | Pulls in |
 |---|---|---|
 | `mcp` | `pip install "archimate-mcp[mcp]"` | FastMCP MCP-server runtime (`agent-utilities[mcp]`) |
-| `agent` | `pip install "archimate-mcp[agent]"` | Pydantic-AI agent + Logfire tracing (`agent-utilities[agent,logfire]`) |
+| `agent` | `pip install "archimate-mcp[agent]"` | Agent runtime + Logfire tracing (`agent-utilities[agent-runtime,logfire]`) |
 | `all` | `pip install "archimate-mcp[all]"` | Everything above |
 | `test` | `pip install "archimate-mcp[test]"` | `pytest`, `pytest-asyncio`, `pytest-cov`, `pytest-xdist` |
 
@@ -48,16 +48,16 @@ uv run archimate-mcp
 
 ## Prebuilt Docker image
 
-A multi-stage, slim image is published on every release (installs
+A multi-stage runtime image is published on every release (installs
 `archimate-mcp[all]`, entrypoint `archimate-mcp`):
 
 ```bash
-docker pull knucklessg1/archimate-mcp:latest
+docker pull example/archimate-mcp@sha256:<digest>
 
 docker run --rm -i \
   -e ARCHI_MODEL_PATH=/data/model.archimate \
   -v "$PWD:/data" \
-  knucklessg1/archimate-mcp:latest        # stdio transport (default)
+  example/archimate-mcp@sha256:<digest>        # stdio transport (default)
 ```
 
 For an HTTP server with a published port and the A2A agent, see

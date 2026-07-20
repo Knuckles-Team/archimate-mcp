@@ -1,0 +1,9 @@
+{
+  "algorithm": "agent-utilities:mcp-tool-schema-compat:v1",
+  "connector": "archimate-mcp",
+  "schema_version": "1",
+  "tools": {
+    "archi_element": "b8ddbc22df54353480a9724c58a733d0f6798526e8af755303a3a850517b8cc8",
+    "archi_relationship": "0280cde5322dd2e3b45326483c9702e46ef1b2a2648a35d24f2b8fb52137c19d"
+  }
+}

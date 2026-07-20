@@ -1,0 +1,4 @@
+interface:
+  display_name: "Archimate MCP Operations"
+  short_description: "Help with Archimate MCP Operations tasks"
+  default_prompt: "Use $archimate-mcp-operations to complete a governed provider workflow."
