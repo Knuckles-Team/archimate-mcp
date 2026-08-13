@@ -1,7 +1,7 @@
 {
   "api_version": "graphos.io/v1",
   "artifacts": {
-    "a2a.json": "cef4febbd37c7f742280f0aa2eb7c3c2b0269f7e9a23662c0595bba14e844088",
+    "a2a.json": "9d3e0409be551ab15bb4a88589f90ae11b623439b7aaba6c4ca059a60da0c94c",
     "archimate_mcp/connectors/mcp_source_presets.json": "84408000845332434e2eb6643617d1f96069a8702b808975b917bf8670d722c9",
     "archimate_mcp/connectors/tool_schema_fingerprints.json": "3f0ad1ef01ba804f6b18c6eedca7a1b74b98d6c54aecaaf456ea91165435f483",
     "archimate_mcp/ontology/archimate.ttl": "99d443a83531d0f40102cbb8cc787d97257e79409baee3bf9f4ed666e96c16b6",
@@ -9,7 +9,7 @@
     "archimate_mcp/ontology/mappings/source.yaml": "e90b21c4e59998da932bcb83fd1f03c19cc1a073e811ec669903b7eafde120a6",
     "archimate_mcp/ontology/migrations/manifest.json": "0e2ab3677a54d87dbbae24be1ed920313534e68be548b6935da85b63b3bbcf88",
     "archimate_mcp/ontology/shapes/connector.shacl.ttl": "e4133fd6ec7160da96c573b3386e4dd5996abc69b616128a3485e6e236fbe5b9",
-    "connector_manifest.yml": "4402f91e48e3a720856704e38cbdd0e9540b42d5963a5747cc78a1d14be55887"
+    "connector_manifest.yml": "05c836ea14e551c202aec11d09d730d7f6024e9c0acc45d329ce3661edd601ff"
   },
   "checks": {
     "declared_tool_schema": "passed",
@@ -19,7 +19,7 @@
     "synthetic_fixture_contract": "passed"
   },
   "compatibility": {
-    "agent_utilities": ">=1.27.1,<2",
+    "agent_utilities": ">=2.1.0,<3",
     "bundle_schema": "2",
     "epistemic_graph": ">=2.23.1,<3"
   },
@@ -28,10 +28,10 @@
   "live_certified": false,
   "mode": "offline-source",
   "schema_version": "2",
-  "signature": "lMvajRIwXuMF4LbaovZT69YklGofsSpyEsu_WJ836BR0DIOVBDpSPy__P8N1nT4PBj9UaUFTiHCjkcaoYMYEAg",
+  "signature": "-EShC8z-82CF4R4ETknpwGoJyFdppJesEGCpV5QtLkU-N9lqrs_UoBpsLvUB4FkBdFoHh_KbZKCFIaWmAPKwCw",
   "signature_algorithm": "ed25519",
   "signer": "ontology-manifest-generator",
-  "signing_public_key": "q0Cp7bmQMqJhbofGKKw8xXC6KbFzukBDDke0UYVi8y4",
+  "signing_public_key": "QkigdPNpcUU7x7NcSkwCsUXIQpaFncMQbYSoiSgI2SY",
   "status": "source-validated",
-  "validated_at": "2026-07-18T00:00:00Z"
+  "validated_at": "2026-07-28T10:14:00Z"
 }
