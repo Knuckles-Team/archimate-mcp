@@ -1,7 +1,7 @@
 {
   "name": "archimate-mcp-agent",
   "type": "agent",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "ArchiMate model engine + MCP Server + A2A Server for Agentic AI!",
   "url": "https://github.com/Knuckles-Team/archimate-mcp/tree/main",
   "license": "MIT",
