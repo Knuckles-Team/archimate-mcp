@@ -11,6 +11,13 @@ repos:
       - id: trailing-whitespace
   - repo: local
     hooks:
+      - id: dependency-readiness
+        name: Dependency readiness — every declared intra-fleet constraint is installable
+        entry: bash -c 'uv run --with repository-manager python -m repository_manager.dependency_readiness .'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [manual, pre-push]
       - id: mcp-readme-table
         name: sync MCP tools table in README
         entry: |-
