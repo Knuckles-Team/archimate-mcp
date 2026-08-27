@@ -8,7 +8,7 @@
     "archimate_mcp/ontology/mappings/source.yaml": "e90b21c4e59998da932bcb83fd1f03c19cc1a073e811ec669903b7eafde120a6",
     "archimate_mcp/ontology/migrations/manifest.json": "0e2ab3677a54d87dbbae24be1ed920313534e68be548b6935da85b63b3bbcf88",
     "archimate_mcp/ontology/shapes/connector.shacl.ttl": "e4133fd6ec7160da96c573b3386e4dd5996abc69b616128a3485e6e236fbe5b9",
-    "connector_manifest.yml": "3e481e3973c862f10e5839ea180a5c5493a5dbec16fb40a4eedfe6d3589919da"
+    "connector_manifest.yml": "7a83a63320cabc63ced2e57a6c1145e299f59caea558c48ea54a0be5ab524585"
   },
   "checks": {
     "declared_tool_schema": "passed",
@@ -18,9 +18,9 @@
     "synthetic_fixture_contract": "passed"
   },
   "compatibility": {
-    "agent_utilities": ">=2.4.0,<3",
+    "agent_utilities": ">=2.5.0,<3",
     "bundle_schema": "2",
-    "epistemic_graph": ">=2.26.0,<3"
+    "epistemic_graph": ">=2.27.0,<3"
   },
   "connector": "archimate-mcp",
   "kind": "ConnectorSourceAttestation",
@@ -32,5 +32,5 @@
   "signer": "UNSIGNED-PREVIEW",
   "signing_public_key": "",
   "status": "source-validated",
-  "validated_at": "2026-08-21T04:30:39Z"
+  "validated_at": "2026-08-26T13:42:55Z"
 }
