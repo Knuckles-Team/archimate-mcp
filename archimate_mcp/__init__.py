@@ -38,26 +38,40 @@ def _import_module_safely(module_name: str):
         return None
 
 
-def __getattr__(name: str) -> Any:
-    if name == "_MCP_AVAILABLE":
-        mcp_key = next((k for k in OPTIONAL_MODULES if "mcp_server" in k), None)
-        return _import_module_safely(mcp_key) is not None if mcp_key else False
-    if name == "_AGENT_AVAILABLE":
-        agent_key = next((k for k in OPTIONAL_MODULES if "agent_server" in k), None)
-        return _import_module_safely(agent_key) is not None if agent_key else False
+#: Sentinel attribute names understood as "is this optional module importable?"
+#: queries, mapped to a substring identifying the module they probe.
+_AVAILABILITY_FLAGS = {
+    "_MCP_AVAILABLE": "mcp_server",
+    "_AGENT_AVAILABLE": "agent_server",
+}
 
+
+def _optional_module_available(module_substring: str) -> bool:
+    module_key = next((k for k in OPTIONAL_MODULES if module_substring in k), None)
+    return _import_module_safely(module_key) is not None if module_key else False
+
+
+def _ensure_optional_module_loaded(module_name: str):
+    if module_name not in _loaded_optional_modules:
+        module = _import_module_safely(module_name)
+        if module is not None:
+            _loaded_optional_modules[module_name] = module
+            _expose_members(module)
+    return _loaded_optional_modules.get(module_name)
+
+
+def _resolve_optional_attribute(name: str) -> Any:
     for module_name in OPTIONAL_MODULES:
-        if module_name not in _loaded_optional_modules:
-            module = _import_module_safely(module_name)
-            if module is not None:
-                _loaded_optional_modules[module_name] = module
-                _expose_members(module)
-
-        module = _loaded_optional_modules.get(module_name)
+        module = _ensure_optional_module_loaded(module_name)
         if module is not None and hasattr(module, name):
             return getattr(module, name)
-
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __getattr__(name: str) -> Any:
+    if name in _AVAILABILITY_FLAGS:
+        return _optional_module_available(_AVAILABILITY_FLAGS[name])
+    return _resolve_optional_attribute(name)
 
 
 def __dir__() -> list[str]:

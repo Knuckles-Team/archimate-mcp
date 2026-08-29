@@ -16,9 +16,8 @@ class ExchangeXmlError(ValueError):
     """An exchange document crossed a parser security boundary."""
 
 
-def parse_exchange_root(path: str):
-    """Read and parse a regular, bounded XML file without DTD/entity support."""
-
+def _read_bounded_exchange_file(path: str) -> bytes:
+    """Read ``path`` as a regular, size-bounded, non-symlink file."""
     candidate = Path(path)
     try:
         if candidate.is_symlink() or not candidate.is_file():
@@ -34,8 +33,13 @@ def parse_exchange_root(path: str):
         raise ExchangeXmlError("exchange document is unavailable") from None
     if len(payload) != size or len(payload) > MAX_EXCHANGE_BYTES:
         raise ExchangeXmlError("exchange document changed while being read")
+    return payload
+
+
+def _parse_defused_exchange_xml(payload: bytes):
+    """Parse ``payload`` with DTDs, entities, and external references forbidden."""
     try:
-        root = DefusedET.fromstring(
+        return DefusedET.fromstring(
             payload,
             forbid_dtd=True,
             forbid_entities=True,
@@ -44,6 +48,9 @@ def parse_exchange_root(path: str):
     except (DefusedET.ParseError, DefusedXmlException, ValueError):
         raise ExchangeXmlError("exchange document is invalid") from None
 
+
+def _enforce_exchange_structure_bounds(root) -> None:
+    """Reject documents whose element count or nesting depth is unsafe."""
     count = 0
     stack = [(root, 1)]
     while stack:
@@ -52,4 +59,11 @@ def parse_exchange_root(path: str):
         if count > MAX_EXCHANGE_ELEMENTS or depth > MAX_EXCHANGE_DEPTH:
             raise ExchangeXmlError("exchange document exceeds its structure boundary")
         stack.extend((child, depth + 1) for child in element)
+
+
+def parse_exchange_root(path: str):
+    """Read and parse a regular, bounded XML file without DTD/entity support."""
+    payload = _read_bounded_exchange_file(path)
+    root = _parse_defused_exchange_xml(payload)
+    _enforce_exchange_structure_bounds(root)
     return root
