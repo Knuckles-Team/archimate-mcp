@@ -201,7 +201,7 @@ def _map_relationship_record(
 
 
 def _map_relationships(
-    relationships: list[dict[str, Any]], elem_nid: dict[str, str]
+    relationships: list[dict[str, Any]] | None, elem_nid: dict[str, str]
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Map ArchiMate relationships → (entities, direct element-to-element edges)."""
     entities: list[dict[str, Any]] = []
@@ -254,7 +254,7 @@ def _map_view_record(
 
 
 def _map_views(
-    views: list[dict[str, Any]], model_nid: str, elem_nid: dict[str, str]
+    views: list[dict[str, Any]] | None, model_nid: str, elem_nid: dict[str, str]
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Map ArchiMate views → (entities, edges to the model + depicted elements)."""
     entities: list[dict[str, Any]] = []
