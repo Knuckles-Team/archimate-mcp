@@ -267,6 +267,151 @@ class View:
 
 
 # --------------------------------------------------------------------------- #
+# Open Exchange Format deserialization helpers (module-level, no ``self``).
+# --------------------------------------------------------------------------- #
+def _exchange_text(node: ET.Element, tag: str) -> str:
+    el = node.find(f"{{{OEF_NS}}}{tag}")
+    return el.text or "" if el is not None and el.text else ""
+
+
+def _parse_property_definitions(root: ET.Element) -> dict[str, str]:
+    """Return the property-definition id -> name lookup, if any is declared."""
+    prop_names: dict[str, str] = {}
+    defs = root.find(f"{{{OEF_NS}}}propertyDefinitions")
+    if defs is None:
+        return prop_names
+    for pdef in defs.findall(f"{{{OEF_NS}}}propertyDefinition"):
+        pid = pdef.get("identifier", "")
+        pn = pdef.find(f"{{{OEF_NS}}}name")
+        prop_names[pid] = pn.text if pn is not None and pn.text else pid
+    return prop_names
+
+
+def _read_exchange_properties(
+    node: ET.Element, prop_names: dict[str, str]
+) -> dict[str, str]:
+    out: dict[str, str] = {}
+    props = node.find(f"{{{OEF_NS}}}properties")
+    if props is None:
+        return out
+    for prop in props.findall(f"{{{OEF_NS}}}property"):
+        ref = prop.get("propertyDefinitionRef", "")
+        key = prop_names.get(ref, ref)
+        val = prop.find(f"{{{OEF_NS}}}value")
+        out[key] = val.text or "" if val is not None else ""
+    return out
+
+
+def _parse_exchange_elements(
+    root: ET.Element, prop_names: dict[str, str]
+) -> dict[str, Element]:
+    elements: dict[str, Element] = {}
+    elements_el = root.find(f"{{{OEF_NS}}}elements")
+    if elements_el is None:
+        return elements
+    for el in elements_el.findall(f"{{{OEF_NS}}}element"):
+        elem = Element(
+            type=el.get(f"{{{XSI_NS}}}type", ""),
+            name=_exchange_text(el, "name"),
+            documentation=_exchange_text(el, "documentation"),
+            id=el.get("identifier", _new_id("elem")),
+            properties=_read_exchange_properties(el, prop_names),
+        )
+        elements[elem.id] = elem
+    return elements
+
+
+def _parse_exchange_relationships(
+    root: ET.Element, prop_names: dict[str, str]
+) -> dict[str, Relationship]:
+    relationships: dict[str, Relationship] = {}
+    rels_el = root.find(f"{{{OEF_NS}}}relationships")
+    if rels_el is None:
+        return relationships
+    for rl in rels_el.findall(f"{{{OEF_NS}}}relationship"):
+        rel = Relationship(
+            type=rl.get(f"{{{XSI_NS}}}type", ""),
+            source=rl.get("source", ""),
+            target=rl.get("target", ""),
+            name=_exchange_text(rl, "name"),
+            documentation=_exchange_text(rl, "documentation"),
+            id=rl.get("identifier", _new_id("rel")),
+            properties=_read_exchange_properties(rl, prop_names),
+        )
+        relationships[rel.id] = rel
+    return relationships
+
+
+def _parse_exchange_folders(root: ET.Element) -> dict[str, Folder]:
+    folders: dict[str, Folder] = {}
+    orgs_el = root.find(f"{{{OEF_NS}}}organizations")
+    if orgs_el is None:
+        return folders
+    for item in orgs_el.findall(f"{{{OEF_NS}}}item"):
+        # Top-level items with a label are folders.
+        label = item.find(f"{{{OEF_NS}}}label")
+        if label is None:
+            continue
+        folder = Folder(
+            name=label.text or "",
+            type=item.get("type", ""),
+            id=item.get("identifier", _new_id("folder")),
+        )
+        for child in item.findall(f"{{{OEF_NS}}}item"):
+            ref = child.get("identifierRef")
+            if ref:
+                folder.children.append(ref)
+        folders[folder.id] = folder
+    return folders
+
+
+def _parse_exchange_view_nodes(dv: ET.Element) -> list[ViewNode]:
+    return [
+        ViewNode(
+            element_ref=nd.get("elementRef", ""),
+            x=int(nd.get("x", "0") or 0),
+            y=int(nd.get("y", "0") or 0),
+            w=int(nd.get("w", "120") or 120),
+            h=int(nd.get("h", "55") or 55),
+            id=nd.get("identifier", _new_id("node")),
+        )
+        for nd in dv.findall(f"{{{OEF_NS}}}node")
+    ]
+
+
+def _parse_exchange_view_connections(dv: ET.Element) -> list[ViewConnection]:
+    return [
+        ViewConnection(
+            relationship_ref=cn.get("relationshipRef", ""),
+            source_node=cn.get("source", ""),
+            target_node=cn.get("target", ""),
+            id=cn.get("identifier", _new_id("conn")),
+        )
+        for cn in dv.findall(f"{{{OEF_NS}}}connection")
+    ]
+
+
+def _parse_exchange_views(root: ET.Element) -> dict[str, View]:
+    views: dict[str, View] = {}
+    views_el = root.find(f"{{{OEF_NS}}}views")
+    if views_el is None:
+        return views
+    diagrams_el = views_el.find(f"{{{OEF_NS}}}diagrams")
+    if diagrams_el is None:
+        return views
+    for dv in diagrams_el.findall(f"{{{OEF_NS}}}view"):
+        view = View(
+            name=_exchange_text(dv, "name"),
+            documentation=_exchange_text(dv, "documentation"),
+            id=dv.get("identifier", _new_id("view")),
+        )
+        view.nodes = _parse_exchange_view_nodes(dv)
+        view.connections = _parse_exchange_view_connections(dv)
+        views[view.id] = view
+    return views
+
+
+# --------------------------------------------------------------------------- #
 # Model
 # --------------------------------------------------------------------------- #
 class ArchiMateModel:
@@ -300,11 +445,7 @@ class ArchiMateModel:
     # ------------------------------------------------------------------ #
     # Open Exchange Format serialization
     # ------------------------------------------------------------------ #
-    def to_open_exchange(self, path: str) -> str:
-        """Serialize the model to an Open Exchange Format XML file."""
-        ET.register_namespace("", OEF_NS)
-        ET.register_namespace("xsi", XSI_NS)
-
+    def _root_element_for_export(self) -> ET.Element:
         model = ET.Element(f"{{{OEF_NS}}}model")
         model.set(
             f"{{{XSI_NS}}}schemaLocation",
@@ -320,60 +461,87 @@ class ArchiMateModel:
             doc_el = ET.SubElement(model, f"{{{OEF_NS}}}documentation")
             doc_el.set(f"{{{LANG_NS}}}lang", "en")
             doc_el.text = self.documentation
+        return model
 
-        # Property definitions: collect distinct property keys.
+    def _collect_property_keys(self) -> list[str]:
         prop_keys: list[str] = []
         for holder in list(self.elements.values()) + list(self.relationships.values()):
             for key in holder.properties:
                 if key not in prop_keys:
                     prop_keys.append(key)
+        return prop_keys
+
+    def _write_property_definitions(self, model: ET.Element) -> dict[str, str]:
         prop_def_id: dict[str, str] = {}
-        if prop_keys:
-            defs = ET.SubElement(model, f"{{{OEF_NS}}}propertyDefinitions")
-            for i, key in enumerate(prop_keys, start=1):
-                pid = f"propid-{i}"
-                prop_def_id[key] = pid
-                pdef = ET.SubElement(defs, f"{{{OEF_NS}}}propertyDefinition")
-                pdef.set("identifier", pid)
-                pdef.set("type", "string")
-                pname = ET.SubElement(pdef, f"{{{OEF_NS}}}name")
-                pname.text = key
+        prop_keys = self._collect_property_keys()
+        if not prop_keys:
+            return prop_def_id
+        defs = ET.SubElement(model, f"{{{OEF_NS}}}propertyDefinitions")
+        for i, key in enumerate(prop_keys, start=1):
+            pid = f"propid-{i}"
+            prop_def_id[key] = pid
+            pdef = ET.SubElement(defs, f"{{{OEF_NS}}}propertyDefinition")
+            pdef.set("identifier", pid)
+            pdef.set("type", "string")
+            pname = ET.SubElement(pdef, f"{{{OEF_NS}}}name")
+            pname.text = key
+        return prop_def_id
 
-        # Elements
-        if self.elements:
-            elements_el = ET.SubElement(model, f"{{{OEF_NS}}}elements")
-            for elem in self.elements.values():
-                self._write_concept(elements_el, "element", elem, prop_def_id)
+    def _write_elements_section(
+        self, model: ET.Element, prop_def_id: dict[str, str]
+    ) -> None:
+        if not self.elements:
+            return
+        elements_el = ET.SubElement(model, f"{{{OEF_NS}}}elements")
+        for elem in self.elements.values():
+            self._write_concept(elements_el, "element", elem, prop_def_id)
 
-        # Relationships
-        if self.relationships:
-            rels_el = ET.SubElement(model, f"{{{OEF_NS}}}relationships")
-            for rel in self.relationships.values():
-                node = self._write_concept(rels_el, "relationship", rel, prop_def_id)
-                node.set("source", rel.source)
-                node.set("target", rel.target)
+    def _write_relationships_section(
+        self, model: ET.Element, prop_def_id: dict[str, str]
+    ) -> None:
+        if not self.relationships:
+            return
+        rels_el = ET.SubElement(model, f"{{{OEF_NS}}}relationships")
+        for rel in self.relationships.values():
+            node = self._write_concept(rels_el, "relationship", rel, prop_def_id)
+            node.set("source", rel.source)
+            node.set("target", rel.target)
 
-        # Organizations (folders)
-        if self.folders:
-            orgs_el = ET.SubElement(model, f"{{{OEF_NS}}}organizations")
-            for folder in self.folders.values():
-                item = ET.SubElement(orgs_el, f"{{{OEF_NS}}}item")
-                label = ET.SubElement(item, f"{{{OEF_NS}}}label")
-                label.set(f"{{{LANG_NS}}}lang", "en")
-                label.text = folder.name
-                item.set("identifier", folder.id)
-                if folder.type:
-                    item.set("type", folder.type)
-                for child_ref in folder.children:
-                    child = ET.SubElement(item, f"{{{OEF_NS}}}item")
-                    child.set("identifierRef", child_ref)
+    def _write_folders_section(self, model: ET.Element) -> None:
+        if not self.folders:
+            return
+        orgs_el = ET.SubElement(model, f"{{{OEF_NS}}}organizations")
+        for folder in self.folders.values():
+            item = ET.SubElement(orgs_el, f"{{{OEF_NS}}}item")
+            label = ET.SubElement(item, f"{{{OEF_NS}}}label")
+            label.set(f"{{{LANG_NS}}}lang", "en")
+            label.text = folder.name
+            item.set("identifier", folder.id)
+            if folder.type:
+                item.set("type", folder.type)
+            for child_ref in folder.children:
+                child = ET.SubElement(item, f"{{{OEF_NS}}}item")
+                child.set("identifierRef", child_ref)
 
-        # Views / diagrams
-        if self.views:
-            views_el = ET.SubElement(model, f"{{{OEF_NS}}}views")
-            diagrams_el = ET.SubElement(views_el, f"{{{OEF_NS}}}diagrams")
-            for view in self.views.values():
-                self._write_view(diagrams_el, view)
+    def _write_views_section(self, model: ET.Element) -> None:
+        if not self.views:
+            return
+        views_el = ET.SubElement(model, f"{{{OEF_NS}}}views")
+        diagrams_el = ET.SubElement(views_el, f"{{{OEF_NS}}}diagrams")
+        for view in self.views.values():
+            self._write_view(diagrams_el, view)
+
+    def to_open_exchange(self, path: str) -> str:
+        """Serialize the model to an Open Exchange Format XML file."""
+        ET.register_namespace("", OEF_NS)
+        ET.register_namespace("xsi", XSI_NS)
+
+        model = self._root_element_for_export()
+        prop_def_id = self._write_property_definitions(model)
+        self._write_elements_section(model, prop_def_id)
+        self._write_relationships_section(model, prop_def_id)
+        self._write_folders_section(model)
+        self._write_views_section(model)
 
         tree = ET.ElementTree(model)
         ET.indent(tree, space="  ")
@@ -455,109 +623,9 @@ class ArchiMateModel:
         if doc_el is not None and doc_el.text:
             model.documentation = doc_el.text
 
-        # Property definition id -> name lookup.
-        prop_names: dict[str, str] = {}
-        defs = root.find(f"{{{OEF_NS}}}propertyDefinitions")
-        if defs is not None:
-            for pdef in defs.findall(f"{{{OEF_NS}}}propertyDefinition"):
-                pid = pdef.get("identifier", "")
-                pn = pdef.find(f"{{{OEF_NS}}}name")
-                prop_names[pid] = pn.text if pn is not None and pn.text else pid
-
-        def _read_props(node: ET.Element) -> dict[str, str]:
-            out: dict[str, str] = {}
-            props = node.find(f"{{{OEF_NS}}}properties")
-            if props is None:
-                return out
-            for prop in props.findall(f"{{{OEF_NS}}}property"):
-                ref = prop.get("propertyDefinitionRef", "")
-                key = prop_names.get(ref, ref)
-                val = prop.find(f"{{{OEF_NS}}}value")
-                out[key] = val.text or "" if val is not None else ""
-            return out
-
-        def _text(node: ET.Element, tag: str) -> str:
-            el = node.find(f"{{{OEF_NS}}}{tag}")
-            return el.text or "" if el is not None and el.text else ""
-
-        # Elements
-        elements_el = root.find(f"{{{OEF_NS}}}elements")
-        if elements_el is not None:
-            for el in elements_el.findall(f"{{{OEF_NS}}}element"):
-                elem = Element(
-                    type=el.get(f"{{{XSI_NS}}}type", ""),
-                    name=_text(el, "name"),
-                    documentation=_text(el, "documentation"),
-                    id=el.get("identifier", _new_id("elem")),
-                    properties=_read_props(el),
-                )
-                model.elements[elem.id] = elem
-
-        # Relationships
-        rels_el = root.find(f"{{{OEF_NS}}}relationships")
-        if rels_el is not None:
-            for rl in rels_el.findall(f"{{{OEF_NS}}}relationship"):
-                rel = Relationship(
-                    type=rl.get(f"{{{XSI_NS}}}type", ""),
-                    source=rl.get("source", ""),
-                    target=rl.get("target", ""),
-                    name=_text(rl, "name"),
-                    documentation=_text(rl, "documentation"),
-                    id=rl.get("identifier", _new_id("rel")),
-                    properties=_read_props(rl),
-                )
-                model.relationships[rel.id] = rel
-
-        # Organizations (folders)
-        orgs_el = root.find(f"{{{OEF_NS}}}organizations")
-        if orgs_el is not None:
-            for item in orgs_el.findall(f"{{{OEF_NS}}}item"):
-                # Top-level items with a label are folders.
-                label = item.find(f"{{{OEF_NS}}}label")
-                if label is None:
-                    continue
-                folder = Folder(
-                    name=label.text or "",
-                    type=item.get("type", ""),
-                    id=item.get("identifier", _new_id("folder")),
-                )
-                for child in item.findall(f"{{{OEF_NS}}}item"):
-                    ref = child.get("identifierRef")
-                    if ref:
-                        folder.children.append(ref)
-                model.folders[folder.id] = folder
-
-        # Views / diagrams
-        views_el = root.find(f"{{{OEF_NS}}}views")
-        if views_el is not None:
-            diagrams_el = views_el.find(f"{{{OEF_NS}}}diagrams")
-            if diagrams_el is not None:
-                for dv in diagrams_el.findall(f"{{{OEF_NS}}}view"):
-                    view = View(
-                        name=_text(dv, "name"),
-                        documentation=_text(dv, "documentation"),
-                        id=dv.get("identifier", _new_id("view")),
-                    )
-                    for nd in dv.findall(f"{{{OEF_NS}}}node"):
-                        view.nodes.append(
-                            ViewNode(
-                                element_ref=nd.get("elementRef", ""),
-                                x=int(nd.get("x", "0") or 0),
-                                y=int(nd.get("y", "0") or 0),
-                                w=int(nd.get("w", "120") or 120),
-                                h=int(nd.get("h", "55") or 55),
-                                id=nd.get("identifier", _new_id("node")),
-                            )
-                        )
-                    for cn in dv.findall(f"{{{OEF_NS}}}connection"):
-                        view.connections.append(
-                            ViewConnection(
-                                relationship_ref=cn.get("relationshipRef", ""),
-                                source_node=cn.get("source", ""),
-                                target_node=cn.get("target", ""),
-                                id=cn.get("identifier", _new_id("conn")),
-                            )
-                        )
-                    model.views[view.id] = view
-
+        prop_names = _parse_property_definitions(root)
+        model.elements = _parse_exchange_elements(root, prop_names)
+        model.relationships = _parse_exchange_relationships(root, prop_names)
+        model.folders = _parse_exchange_folders(root)
+        model.views = _parse_exchange_views(root)
         return model

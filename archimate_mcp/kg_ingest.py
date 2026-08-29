@@ -89,6 +89,188 @@ def _node_id(kind: str, ext_id: str) -> str:
     return f"archimate:{kind.lower()}:{ext_id}"
 
 
+def _build_model_entity(model: dict[str, Any]) -> tuple[dict[str, Any], str]:
+    """Return the owning ``:ArchimateModel`` entity dict and its KG node id."""
+    model_name = model.get("name") or "ArchiMate Model"
+    model_ext = model.get("id") or _slug(model_name)
+    model_nid = _node_id("model", model_ext)
+    entity = {
+        "id": model_nid,
+        "node_type": "ArchimateModel",
+        "name": model_name,
+        "documentation": model.get("documentation") or None,
+        "externalToolId": str(model_ext),
+    }
+    return entity, model_nid
+
+
+def _element_documentation_node(
+    nid: str, etype_name: str, elem: dict[str, Any]
+) -> dict[str, Any] | None:
+    """Return a ``:Document`` node for ``elem``'s documentation, if any."""
+    doc = (elem.get("documentation") or "").strip()
+    if not doc:
+        return None
+    return {
+        "id": f"{nid}:doc",
+        "document_type": "archimate_element",
+        "title": elem.get("name") or etype_name,
+        "text": doc,
+        "source_uri": nid,
+        "archimateType": etype_name,
+    }
+
+
+def _map_element_record(
+    elem: dict[str, Any], model_nid: str
+) -> tuple[str, str, dict[str, Any], dict[str, Any], dict[str, Any] | None] | None:
+    """Map one ArchiMate element to its (id key, node id, entity, edge, doc)."""
+    eid = elem.get("id")
+    etype = elem.get("type")
+    if not eid or not etype:
+        return None
+    eid_key = str(eid)
+    etype_name = str(etype)
+    nid = _node_id(etype_name, eid_key)
+    entity = {
+        "id": nid,
+        "node_type": etype_name,
+        "name": elem.get("name") or None,
+        "documentation": elem.get("documentation") or None,
+        "archimateType": etype_name,
+        "archimateLayer": elem.get("layer") or _layer_of(etype_name),
+        "externalToolId": eid_key,
+    }
+    edge = {"source": model_nid, "target": nid, "relationship": "hasElement"}
+    doc = _element_documentation_node(nid, etype_name, elem)
+    return eid_key, nid, entity, edge, doc
+
+
+def _map_elements(
+    elements: list[dict[str, Any]], model_nid: str
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], dict[str, str]]:
+    """Map ArchiMate elements → (entities, edges, documents, id -> KG node id)."""
+    entities: list[dict[str, Any]] = []
+    edges: list[dict[str, Any]] = []
+    documents: list[dict[str, Any]] = []
+    elem_nid: dict[str, str] = {}
+
+    for elem in elements or []:
+        mapped = _map_element_record(elem, model_nid)
+        if mapped is None:
+            continue
+        eid_key, nid, entity, edge, doc = mapped
+        elem_nid[eid_key] = nid
+        entities.append(entity)
+        edges.append(edge)
+        if doc:
+            documents.append(doc)
+
+    return entities, edges, documents, elem_nid
+
+
+def _map_relationship_record(
+    rel: dict[str, Any], elem_nid: dict[str, str]
+) -> tuple[dict[str, Any], dict[str, Any] | None] | None:
+    """Map one ArchiMate relationship to its (entity, direct element-to-element edge)."""
+    rid = rel.get("id")
+    rtype = rel.get("type")
+    if not rid or not rtype:
+        return None
+    rid_key = str(rid)
+    relationship_type = str(rtype)
+    rnid = _node_id("relationship", rid_key)
+    src = rel.get("source")
+    tgt = rel.get("target")
+    src_nid = elem_nid.get(str(src)) if src is not None else None
+    tgt_nid = elem_nid.get(str(tgt)) if tgt is not None else None
+    entity = {
+        "id": rnid,
+        "node_type": "ArchimateRelationship",
+        "name": rel.get("name") or None,
+        "archimateType": relationship_type,
+        "relSource": src_nid,
+        "relTarget": tgt_nid,
+        "externalToolId": rid_key,
+    }
+    # Direct element-to-element edge carrying the ArchiMate relationship type.
+    edge = None
+    if src_nid and tgt_nid:
+        edge = {"source": src_nid, "target": tgt_nid, "relationship": relationship_type}
+    return entity, edge
+
+
+def _map_relationships(
+    relationships: list[dict[str, Any]], elem_nid: dict[str, str]
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Map ArchiMate relationships → (entities, direct element-to-element edges)."""
+    entities: list[dict[str, Any]] = []
+    edges: list[dict[str, Any]] = []
+
+    for rel in relationships or []:
+        mapped = _map_relationship_record(rel, elem_nid)
+        if mapped is None:
+            continue
+        entity, edge = mapped
+        entities.append(entity)
+        if edge:
+            edges.append(edge)
+
+    return entities, edges
+
+
+def _view_depicts_edges(
+    view: dict[str, Any], vnid: str, elem_nid: dict[str, str]
+) -> list[dict[str, Any]]:
+    """Return ``depictsElement`` edges from ``view`` to the elements it shows."""
+    edges: list[dict[str, Any]] = []
+    for node in view.get("nodes", []) or []:
+        element_ref = node.get("element_ref")
+        ref = elem_nid.get(str(element_ref)) if element_ref is not None else None
+        if ref:
+            edges.append({"source": vnid, "target": ref, "relationship": "depictsElement"})
+    return edges
+
+
+def _map_view_record(
+    view: dict[str, Any], model_nid: str, elem_nid: dict[str, str]
+) -> tuple[dict[str, Any], list[dict[str, Any]]] | None:
+    """Map one ArchiMate view to its (entity, [hasView edge, depictsElement edges...])."""
+    vid = view.get("id")
+    if not vid:
+        return None
+    vid_key = str(vid)
+    vnid = _node_id("view", vid_key)
+    entity = {
+        "id": vnid,
+        "node_type": "ArchimateView",
+        "name": view.get("name") or None,
+        "documentation": view.get("documentation") or None,
+        "externalToolId": vid_key,
+    }
+    edges = [{"source": model_nid, "target": vnid, "relationship": "hasView"}]
+    edges.extend(_view_depicts_edges(view, vnid, elem_nid))
+    return entity, edges
+
+
+def _map_views(
+    views: list[dict[str, Any]], model_nid: str, elem_nid: dict[str, str]
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Map ArchiMate views → (entities, edges to the model + depicted elements)."""
+    entities: list[dict[str, Any]] = []
+    edges: list[dict[str, Any]] = []
+
+    for view in views or []:
+        mapped = _map_view_record(view, model_nid, elem_nid)
+        if mapped is None:
+            continue
+        entity, view_edges = mapped
+        entities.append(entity)
+        edges.extend(view_edges)
+
+    return entities, edges
+
+
 def build_model_graph(
     elements: list[dict[str, Any]],
     relationships: list[dict[str, Any]] | None = None,
@@ -102,120 +284,23 @@ def build_model_graph(
     an ``:ArchimateView`` node, plus an owning ``:ArchimateModel`` node. Element and
     view documentation become ``:Document`` nodes for semantic search.
     """
-    entities: list[dict[str, Any]] = []
+    model_entity, model_nid = _build_model_entity(model or {})
+    entities: list[dict[str, Any]] = [model_entity]
     edges: list[dict[str, Any]] = []
     documents: list[dict[str, Any]] = []
 
-    model = model or {}
-    model_name = model.get("name") or "ArchiMate Model"
-    model_ext = model.get("id") or _slug(model_name)
-    model_nid = _node_id("model", model_ext)
-    entities.append(
-        {
-            "id": model_nid,
-            "node_type": "ArchimateModel",
-            "name": model_name,
-            "documentation": model.get("documentation") or None,
-            "externalToolId": str(model_ext),
-        }
-    )
+    elem_entities, elem_edges, elem_docs, elem_nid = _map_elements(elements, model_nid)
+    entities.extend(elem_entities)
+    edges.extend(elem_edges)
+    documents.extend(elem_docs)
 
-    # id (raw archimate element id) -> KG node id, for edge wiring.
-    elem_nid: dict[str, str] = {}
-    for elem in elements or []:
-        eid = elem.get("id")
-        etype = elem.get("type")
-        if not eid or not etype:
-            continue
-        eid_key = str(eid)
-        etype_name = str(etype)
-        nid = _node_id(etype_name, eid_key)
-        elem_nid[eid_key] = nid
-        entities.append(
-            {
-                "id": nid,
-                "node_type": etype_name,
-                "name": elem.get("name") or None,
-                "documentation": elem.get("documentation") or None,
-                "archimateType": etype_name,
-                "archimateLayer": elem.get("layer") or _layer_of(etype_name),
-                "externalToolId": eid_key,
-            }
-        )
-        edges.append({"source": model_nid, "target": nid, "relationship": "hasElement"})
-        doc = (elem.get("documentation") or "").strip()
-        if doc:
-            documents.append(
-                {
-                    "id": f"{nid}:doc",
-                    "document_type": "archimate_element",
-                    "title": elem.get("name") or etype_name,
-                    "text": doc,
-                    "source_uri": nid,
-                    "archimateType": etype_name,
-                }
-            )
+    rel_entities, rel_edges = _map_relationships(relationships, elem_nid)
+    entities.extend(rel_entities)
+    edges.extend(rel_edges)
 
-    for rel in relationships or []:
-        rid = rel.get("id")
-        rtype = rel.get("type")
-        src = rel.get("source")
-        tgt = rel.get("target")
-        if not rid or not rtype:
-            continue
-        rid_key = str(rid)
-        relationship_type = str(rtype)
-        rnid = _node_id("relationship", rid_key)
-        src_nid = elem_nid.get(str(src)) if src is not None else None
-        tgt_nid = elem_nid.get(str(tgt)) if tgt is not None else None
-        entities.append(
-            {
-                "id": rnid,
-                "node_type": "ArchimateRelationship",
-                "name": rel.get("name") or None,
-                "archimateType": relationship_type,
-                "relSource": src_nid,
-                "relTarget": tgt_nid,
-                "externalToolId": rid_key,
-            }
-        )
-        # Direct element-to-element edge carrying the ArchiMate relationship type.
-        if src_nid and tgt_nid:
-            edges.append(
-                {
-                    "source": src_nid,
-                    "target": tgt_nid,
-                    "relationship": relationship_type,
-                }
-            )
-
-    for view in views or []:
-        vid = view.get("id")
-        if not vid:
-            continue
-        vid_key = str(vid)
-        vnid = _node_id("view", vid_key)
-        entities.append(
-            {
-                "id": vnid,
-                "node_type": "ArchimateView",
-                "name": view.get("name") or None,
-                "documentation": view.get("documentation") or None,
-                "externalToolId": vid_key,
-            }
-        )
-        edges.append({"source": model_nid, "target": vnid, "relationship": "hasView"})
-        for node in view.get("nodes", []) or []:
-            element_ref = node.get("element_ref")
-            ref = elem_nid.get(str(element_ref)) if element_ref is not None else None
-            if ref:
-                edges.append(
-                    {
-                        "source": vnid,
-                        "target": ref,
-                        "relationship": "depictsElement",
-                    }
-                )
+    view_entities, view_edges = _map_views(views, model_nid, elem_nid)
+    entities.extend(view_entities)
+    edges.extend(view_edges)
 
     return entities, edges, documents
 
