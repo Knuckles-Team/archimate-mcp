@@ -8,7 +8,7 @@ so the in-memory model and the on-disk Open Exchange file stay in sync.
 """
 
 import json
-from typing import Any
+from typing import Any, Literal
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -71,7 +71,7 @@ def register_archi_tools(mcp: FastMCP) -> None:
 
     @mcp.tool(tags={"element"})
     async def archi_element(
-        action: str = Field(
+        action: Literal["add", "delete", "find", "get", "list", "update"] = Field(
             description=(
                 "Element action. One of: 'add', 'get', 'update', 'delete', "
                 "'list', 'find'."
@@ -125,7 +125,7 @@ def register_archi_tools(mcp: FastMCP) -> None:
 
     @mcp.tool(tags={"relationship"})
     async def archi_relationship(
-        action: str = Field(
+        action: Literal["add", "delete", "get", "list", "update", "validate"] = Field(
             description=(
                 "Relationship action. One of: 'add', 'get', 'update', "
                 "'delete', 'list', 'validate'."
