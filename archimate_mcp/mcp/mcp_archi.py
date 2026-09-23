@@ -69,7 +69,18 @@ def register_archi_tools(mcp: FastMCP) -> None:
             return client.model_summary()
         raise ValueError(f"Unknown model action: {action!r}.")
 
-    @mcp.tool(tags={"element"})
+    @mcp.tool(
+        tags={"element"},
+        annotations={
+            "readOnlyHint": False,
+            "destructiveHint": True,
+            "idempotentHint": False,
+            "openWorldHint": False,
+        },
+        meta={
+            "eg.annotations": {"modalities_in": ["text"], "modalities_out": ["text"]}
+        },
+    )
     async def archi_element(
         action: Literal["add", "delete", "find", "get", "list", "update"] = Field(
             description=(
@@ -123,7 +134,18 @@ def register_archi_tools(mcp: FastMCP) -> None:
             return client.find_elements(p["name_substring"])
         raise ValueError(f"Unknown element action: {action!r}.")
 
-    @mcp.tool(tags={"relationship"})
+    @mcp.tool(
+        tags={"relationship"},
+        annotations={
+            "readOnlyHint": False,
+            "destructiveHint": True,
+            "idempotentHint": False,
+            "openWorldHint": False,
+        },
+        meta={
+            "eg.annotations": {"modalities_in": ["text"], "modalities_out": ["text"]}
+        },
+    )
     async def archi_relationship(
         action: Literal["add", "delete", "get", "list", "update", "validate"] = Field(
             description=(
