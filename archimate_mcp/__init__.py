@@ -9,7 +9,6 @@ __all__: list[str] = []
 
 CORE_MODULES = ["archimate_mcp.api_client"]
 OPTIONAL_MODULES = {
-    "archimate_mcp.agent_server": "agent",
     "archimate_mcp.mcp_server": "mcp",
 }
 

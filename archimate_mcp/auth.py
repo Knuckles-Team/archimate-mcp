@@ -6,8 +6,8 @@ ArchiMate model engine) at the model file named by ``ARCHI_MODEL_PATH``,
 loading it if it already exists.
 """
 
-from agent_utilities.base_utilities import get_logger
-from agent_utilities.core.config import setting
+from agent_connector_sdk.config import setting
+from agent_connector_sdk.utilities import get_logger
 
 from archimate_mcp.api_client import Api
 
