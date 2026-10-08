@@ -38,7 +38,7 @@ File Format, so they open directly in Archi and any conformant ArchiMate tool.
 
 <div class="grid cards" markdown>
 
-- :material-rocket-launch: **[Installation](installation.md)** — pip, source, extras, and the prebuilt Docker image.
+- :material-rocket-start: **[Installation](installation.md)** — pip, source, extras, and the prebuilt Docker image.
 - :material-server-network: **[Deployment](deployment.md)** — run the MCP and agent servers, Docker Compose, Caddy + Technitium.
 - :material-console: **[Usage](usage.md)** — the MCP tools, the `ArchiApi` client, and the CLI entry points.
 - :material-sitemap: **[Overview](overview.md)** — the model engine, layered façade, and MCP/A2A surface.

@@ -114,7 +114,7 @@ curl -s http://localhost:8000/health        # {"status":"OK"}
 
 Plus `HOST` / `PORT` / `TRANSPORT` for HTTP transports. Copy
 [`.env.example`](https://github.com/Knuckles-Team/archimate-mcp/blob/main/.env.example)
-to `.env` and adjust the values you need.
+to `.env` and adjust the values the operator need.
 
 ## Docker Compose
 
@@ -210,7 +210,7 @@ docker compose -f docker/agent.compose.yml up -d
 
 ## Behind a Caddy reverse proxy
 
-Expose the HTTP server on a hostname with automatic TLS. Add to your `Caddyfile`:
+Expose the HTTP server on a hostname with automatic TLS. Add to the operator's `Caddyfile`:
 
 ```caddy
 # Internal (self-signed) — homelab .example.invalid zone
@@ -254,7 +254,7 @@ this as a tool.
 
 ## Register with an MCP client
 
-Add to your client's `mcp_config.json` (multiplexer nickname `archi`):
+Add to the operator's client's `mcp_config.json` (multiplexer nickname `archi`):
 
 ```json
 {
