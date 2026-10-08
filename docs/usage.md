@@ -1,7 +1,7 @@
 # Usage — API / CLI / MCP
 
 `archimate-mcp` exposes the same capability three ways: as **MCP tools** an agent
-calls, as a **Python API** (`ArchiApi`) you import, and as **CLI** entry points. The
+calls, as a **Python API** (`ArchiApi`) the operator import, and as **CLI** entry points. The
 complete tool surface is summarized in [Overview](overview.md).
 
 ## As an MCP server
