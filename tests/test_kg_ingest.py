@@ -1,22 +1,19 @@
 """Native epistemic-graph typed-node ingestion — Wire-First coverage.
 
 Exercises the real ``build_model_graph`` mapper + ``ingest_entities`` / ``ingest_model``
-/ ``ingest_from_api`` seams with a fake ChangeEnvelope client and a fake ArchiApi (no
-engine required), asserting the governed atomic write and the ArchiMate element →
+/ ``ingest_from_api`` seams against a fake epistemic-graph ingest transport (no engine
+required), asserting the governed atomic write and the ArchiMate element →
 :ApplicationComponent / relationship → :ArchimateRelationship mapping.
 CONCEPT:AU-KG.ingest.enterprise-source-extractor.
 """
 
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import Any
 
-import msgpack
 import pytest
-from agent_utilities.knowledge_graph.core.session import GraphSession, use_session
-from agent_utilities.knowledge_graph.memory.native_ingest import NativeIngestError
-from agent_utilities.security.actor_identity import ActorType
-from agent_utilities.security.brain_context import ActorContext, use_actor
+from agent_connector_sdk.ingest import IngestError, KnowledgeIngest
 
 from archimate_mcp.kg_ingest import (
     build_model_graph,
@@ -26,92 +23,30 @@ from archimate_mcp.kg_ingest import (
 )
 
 
-@pytest.fixture(autouse=True)
-def _governed_session():
-    actor = ActorContext(
-        actor_id="subject:opaque:synthetic",
-        actor_type=ActorType.AUTOMATED_SERVICE,
-        roles=(),
-        tenant_id="tenant:opaque:synthetic",
-        authenticated=True,
-    )
-    session = GraphSession(
-        actor=actor,
-        tenant=actor.tenant_id,
-        scopes=frozenset({"kg:write"}),
-        graph="graph:opaque:synthetic",
-        policy_version="policy:opaque:synthetic",
-        audience="epistemic-graph",
-    )
-    with use_actor(actor), use_session(session):
-        yield
+class _FakeTransport:
+    """Stands in for the epistemic-graph ingest transport boundary."""
 
-
-class _FakeNodes:
     def __init__(self) -> None:
-        self.values: dict[str, dict[str, Any]] = {}
+        self.requests: list[Any] = []
 
-    def properties(self, node_id: str) -> dict[str, Any] | None:
-        return self.values.get(node_id)
+    async def source_status(self, connector: str, stream: str) -> SimpleNamespace:
+        return SimpleNamespace(accepted_checkpoint=None)
 
-    def list(self) -> list[tuple[str, dict[str, Any]]]:
-        return list(self.values.items())
+    async def submit(self, request: Any) -> SimpleNamespace:
+        self.requests.append(request)
+        return SimpleNamespace(
+            affected_count=len(request.records),
+            relationship_count=len(request.relationships),
+        )
 
-
-class _FakeChanges:
-    def __init__(self, nodes: _FakeNodes) -> None:
-        self.nodes = nodes
-        self.edges: list[tuple[str, str, dict[str, Any]]] = []
-        self.applied: list[dict[str, Any]] = []
-        self.records: dict[str, dict[str, Any]] = {}
-        self.versions: dict[str, dict[str, Any]] = {}
-
-    def get(self, envelope_id: str) -> dict[str, Any] | None:
-        return self.records.get(envelope_id)
-
-    def content_version(self, object_id: str) -> dict[str, Any] | None:
-        return self.versions.get(object_id)
-
-    def cursor(self, _source: str, _partition: str = "") -> None:
-        return None
-
-    def apply(self, envelope: dict[str, Any]) -> dict[str, Any]:
-        self.applied.append(envelope)
-        mutation = envelope["mutation"]
-        for operation in mutation["operations"]:
-            method = operation["method"]
-            params = method["params"]
-            properties = msgpack.unpackb(params["properties_msgpack"], raw=False)
-            if method["method"] == "AddNode":
-                self.nodes.values[params["node_id"]] = properties
-            elif method["method"] == "AddEdge":
-                self.edges.append(
-                    (params["source_id"], params["target_id"], properties)
-                )
-        version = envelope["content_version"]
-        self.versions[version["object_id"]] = version
-        self.records[envelope["envelope_id"]] = envelope
-        return {
-            "batch_id": mutation["batch_id"],
-            "replayed": False,
-            "projection_pending": False,
-        }
+    async def store_blob(self, data: bytes) -> str:
+        raise AssertionError("this connector's ingestion carries no media")
 
 
-class _FakeRdf:
-    def validate_shacl(self, _shapes: str, _data_graph: str) -> dict[str, Any]:
-        return {"conforms": True, "results": []}
-
-
-class _FakeClient:
-    def __init__(self) -> None:
-        self.nodes = _FakeNodes()
-        self.changes = _FakeChanges(self.nodes)
-        self.rdf = _FakeRdf()
-
-    @staticmethod
-    def supports(operation: str) -> bool:
-        return operation == "ApplyChangeEnvelope"
+@pytest.fixture
+def ingest() -> tuple[KnowledgeIngest, _FakeTransport]:
+    transport = _FakeTransport()
+    return KnowledgeIngest(transport, loop=None), transport
 
 
 class _FakeApi:
@@ -224,11 +159,12 @@ def test_build_model_graph_normalizes_external_identifiers():
 
 
 # --------------------------------------------------------------------------- #
-# Engine write path (fake client)
+# Engine write path (fake transport)
 # --------------------------------------------------------------------------- #
-def test_ingest_entities_writes_nodes_and_edges():
-    c = _FakeClient()
-    res = ingest_entities(
+@pytest.mark.asyncio
+async def test_ingest_entities_writes_nodes_and_edges(ingest):
+    service, transport = ingest
+    res = await ingest_entities(
         [
             {"id": "archimate:model:m1", "node_type": "ArchimateModel", "name": "m"},
             {"id": "archimate:node:n1", "node_type": "Node"},
@@ -240,52 +176,60 @@ def test_ingest_entities_writes_nodes_and_edges():
                 "relationship": "hasElement",
             }
         ],
-        client=c,
-        graph="graph:opaque:synthetic",
+        ingest=service,
     )
     assert res == {"nodes": 2, "edges": 1}
-    assert len(c.changes.applied) == 1
-    assert set(c.nodes.values) == {"archimate:model:m1", "archimate:node:n1"}
-    # provenance is stamped
-    assert c.nodes.values["archimate:model:m1"]["source"] == "archimate-mcp"
-    assert c.nodes.values["archimate:model:m1"]["domain"] == "archimate"
-    assert c.changes.edges[0][2] == {"relationship": "hasElement"}
+    assert len(transport.requests) == 1
+    request = transport.requests[0]
+    assert {record.record_id for record in request.records} == {
+        "archimate:model:m1",
+        "archimate:node:n1",
+    }
+    assert request.relationships[0].relation_reference.endswith("/relations/hasElement")
 
 
-def test_ingest_model_end_to_end_with_fake_client():
-    c = _FakeClient()
-    res = ingest_model(
+@pytest.mark.asyncio
+async def test_ingest_model_end_to_end_with_fake_transport(ingest):
+    service, transport = ingest
+    res = await ingest_model(
         _FakeApi().list_elements(),
         _FakeApi().list_relationships(),
         _FakeApi().list_views(),
         _FakeApi().model_summary(),
-        client=c,
+        ingest=service,
     )
     assert res is not None
     # model + 2 elements + 1 relationship + 1 view = 5 nodes
     assert res["nodes"] == 5
     assert res["documents"] == 1
-    assert c.nodes.values["archimate:applicationcomponent:elem-a"]["node_type"] == (
-        "ApplicationComponent"
-    )
+    # two submits: entities+relationships, then documents
+    assert len(transport.requests) == 2
+    entity_ids = {record.record_id for record in transport.requests[0].records}
+    assert "archimate:applicationcomponent:elem-a" in entity_ids
 
 
-def test_ingest_from_api_lists_and_pushes():
-    c = _FakeClient()
-    res = ingest_from_api(_FakeApi(), client=c)
+@pytest.mark.asyncio
+async def test_ingest_from_api_lists_and_pushes(ingest):
+    service, transport = ingest
+    res = await ingest_from_api(_FakeApi(), ingest=service)
     assert res is not None
     assert res["nodes"] == 5
-    assert "archimate:relationship:rel-1" in c.nodes.values
+    entity_ids = {record.record_id for record in transport.requests[0].records}
+    assert "archimate:relationship:rel-1" in entity_ids
 
 
 # --------------------------------------------------------------------------- #
 # Guarded no-ops
 # --------------------------------------------------------------------------- #
-def test_ingest_rejects_legacy_structural_fields():
-    with pytest.raises(NativeIngestError, match="canonical node_type"):
-        ingest_entities([{"id": "legacy", "type": "Legacy"}], client=_FakeClient())
+@pytest.mark.asyncio
+async def test_ingest_rejects_entity_missing_node_type(ingest):
+    service, _transport = ingest
+    with pytest.raises(IngestError, match="node_type"):
+        await ingest_entities([{"id": "legacy", "type": "Legacy"}], ingest=service)
 
 
-def test_ingest_empty_is_rejected():
-    with pytest.raises(NativeIngestError, match="at least one entity"):
-        ingest_entities([], client=_FakeClient())
+@pytest.mark.asyncio
+async def test_ingest_empty_is_rejected(ingest):
+    service, _transport = ingest
+    with pytest.raises(IngestError, match="at least one entity"):
+        await ingest_entities([], ingest=service)

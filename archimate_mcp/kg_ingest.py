@@ -7,8 +7,8 @@ nodes** — every element becomes an ``:ArchimateElement`` subclass node (``:App
 node **and** a direct LPG edge between its endpoints, and every view an ``:ArchimateView``
 node. The classes match those federated by :mod:`archimate_mcp.ontology`.
 
-Writes go directly through the required
-``agent_utilities.knowledge_graph.memory.native_ingest`` authority. Node ids follow
+Writes go directly through the ``agent_connector_sdk.ingest`` knowledge-ingest facade
+(the generated EG client), bound to this connector's manifest identity. Node ids follow
 ``archimate:<class>:<extId>`` and structural fields use ``node_type`` / ``relationship``.
 """
 
@@ -18,11 +18,15 @@ import logging
 import re
 from typing import Any
 
-from agent_utilities.knowledge_graph.memory.native_ingest import (
-    ingest_documents as _native_ingest_documents,
-)
-from agent_utilities.knowledge_graph.memory.native_ingest import (
-    ingest_entities as _native_ingest_entities,
+from agent_connector_sdk.ingest import (
+    ChangeSet,
+    Document,
+    Entity,
+    IngestBinding,
+    IngestError,
+    KnowledgeIngest,
+    Relationship,
+    current_ingest,
 )
 
 from archimate_mcp.api.archimate_model import LAYER_OF_TYPE
@@ -31,6 +35,7 @@ logger = logging.getLogger("archimate_mcp.kg")
 
 _SOURCE = "archimate-mcp"
 _DOMAIN = "archimate"
+_BINDING = IngestBinding(connector=_SOURCE, stream=_DOMAIN)
 
 
 def _layer_of(elem_type: str) -> str | None:
@@ -38,44 +43,78 @@ def _layer_of(elem_type: str) -> str | None:
     return LAYER_OF_TYPE.get(elem_type)
 
 
-def ingest_entities(
-    entities: list[dict[str, Any]],
-    relationships: list[dict[str, Any]] | None = None,
-    *,
-    source: str = _SOURCE,
-    domain: str = _DOMAIN,
-    client: Any | None = None,
-    graph: str | None = None,
-) -> dict[str, int]:
-    """Write typed OWL nodes (+ edges) into the engine.
-
-    Validation and engine failures are surfaced as ``NativeIngestError``.
-    """
-    return _native_ingest_entities(
-        entities,
-        relationships,
-        source=source,
-        domain=domain,
-        client=client,
-        graph=graph,
+def _to_entity(record: dict[str, Any]) -> Entity:
+    return Entity(
+        id=record.get("id"),
+        node_type=record.get("node_type"),
+        properties={k: v for k, v in record.items() if k not in ("id", "node_type")},
     )
 
 
-def ingest_documents(
+def _to_relationship(record: dict[str, Any]) -> Relationship:
+    props = {
+        k: v
+        for k, v in record.items()
+        if k not in ("source", "target", "relationship")
+    }
+    return Relationship(
+        source=record["source"],
+        target=record["target"],
+        relationship=record["relationship"],
+        properties=props or None,
+    )
+
+
+def _to_document(record: dict[str, Any]) -> Document:
+    return Document(
+        id=record["id"],
+        text=record.get("text", ""),
+        title=record.get("title"),
+        source_uri=record.get("source_uri"),
+        properties={
+            k: v
+            for k, v in record.items()
+            if k not in ("id", "text", "title", "source_uri")
+        },
+    )
+
+
+async def ingest_entities(
+    entities: list[dict[str, Any]],
+    relationships: list[dict[str, Any]] | None = None,
+    *,
+    ingest: KnowledgeIngest | None = None,
+) -> dict[str, int]:
+    """Write typed OWL nodes (+ edges) into the engine.
+
+    Validation and engine failures are surfaced as ``IngestError``.
+    """
+    if not entities:
+        raise IngestError("ingest_entities needs at least one entity")
+    change_set = ChangeSet(
+        entities=tuple(_to_entity(e) for e in entities),
+        relationships=tuple(_to_relationship(r) for r in relationships or ()),
+    )
+    service = ingest or current_ingest()
+    receipt = await service.submit(_BINDING, change_set)
+    return {"nodes": receipt.affected_count, "edges": receipt.relationship_count}
+
+
+async def ingest_documents(
     docs: list[dict[str, Any]],
     *,
-    source: str = _SOURCE,
-    domain: str = _DOMAIN,
-    client: Any | None = None,
-    graph: str | None = None,
+    ingest: KnowledgeIngest | None = None,
 ) -> dict[str, int]:
     """Write free-text ``:Document`` nodes (element/view documentation) for search.
 
     ``docs``: ``[{"id":..., "title":..., "text":..., "source_uri":...}]``.
     """
-    return _native_ingest_documents(
-        docs, source=source, domain=domain, client=client, graph=graph
-    )
+    if not docs:
+        return {"nodes": 0}
+    change_set = ChangeSet(documents=tuple(_to_document(d) for d in docs))
+    service = ingest or current_ingest()
+    receipt = await service.submit(_BINDING, change_set)
+    return {"nodes": receipt.affected_count}
 
 
 # --------------------------------------------------------------------------- #
@@ -305,14 +344,13 @@ def build_model_graph(
     return entities, edges, documents
 
 
-def ingest_model(
+async def ingest_model(
     elements: list[dict[str, Any]],
     relationships: list[dict[str, Any]] | None = None,
     views: list[dict[str, Any]] | None = None,
     model: dict[str, Any] | None = None,
     *,
-    client: Any | None = None,
-    graph: str | None = None,
+    ingest: KnowledgeIngest | None = None,
 ) -> dict[str, int]:
     """Map ArchiMate model records and push them into the KG.
 
@@ -321,9 +359,9 @@ def ingest_model(
     entities, edges, documents = build_model_graph(
         elements, relationships, views, model
     )
-    res = ingest_entities(entities, edges, client=client, graph=graph)
+    res = await ingest_entities(entities, edges, ingest=ingest)
     doc_res = (
-        ingest_documents(documents, client=client, graph=graph)
+        await ingest_documents(documents, ingest=ingest)
         if documents
         else {"nodes": 0}
     )
@@ -331,20 +369,19 @@ def ingest_model(
     return res
 
 
-def ingest_from_api(
+async def ingest_from_api(
     api: Any,
     *,
-    client: Any | None = None,
-    graph: str | None = None,
+    ingest: KnowledgeIngest | None = None,
 ) -> dict[str, int]:
     """List the current model via an :class:`ArchiApi` and ingest it.
 
-    Source and native-ingestion failures propagate to the caller.
+    Source and ingestion failures propagate to the caller.
     """
     elements = api.list_elements()
     relationships = api.list_relationships()
     views = api.list_views()
     model = api.model_summary()
-    return ingest_model(
-        elements, relationships, views, model, client=client, graph=graph
+    return await ingest_model(
+        elements, relationships, views, model, ingest=ingest
     )

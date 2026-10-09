@@ -56,13 +56,13 @@ def register_archi_tools(mcp: FastMCP) -> None:
             _persist(client)
             return result
         if action == "load":
-            return client.load(p.get("path"))
+            return await client.load(p.get("path"))
         if action == "save":
             return client.save(p.get("path"))
         if action == "export_exchange":
             return client.export_open_exchange(p["path"])
         if action == "import_exchange":
-            result = client.import_open_exchange(p["path"])
+            result = await client.import_open_exchange(p["path"])
             _persist(client)
             return result
         if action == "summary":
@@ -321,7 +321,7 @@ def register_archi_tools(mcp: FastMCP) -> None:
         client = get_client()
         p = json.loads(params_json) if params_json else {}
         if p.get("path"):
-            client.load(p["path"])
-        result = kg_ingest.ingest_from_api(client)
+            await client.load(p["path"])
+        result = await kg_ingest.ingest_from_api(client)
         summary = client.model_summary()
         return {"model": summary.get("counts"), "ingested": result}
