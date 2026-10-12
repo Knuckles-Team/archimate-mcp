@@ -11,13 +11,6 @@ repos:
       - id: trailing-whitespace
   - repo: local
     hooks:
-      - id: dependency-readiness
-        name: Dependency readiness — every declared intra-fleet constraint is installable
-        entry: bash -c 'P=""; d="$PWD"; while [ "$d" != "/" ]; do [ -d "$d/agent-packages/agents/repository-manager" ] && { P="$d/agent-packages/agents/repository-manager"; break; }; d=$(dirname "$d"); done; [ -n "$P" ] || P=repository-manager; uv run --no-project --python 3.12 --prerelease=allow --with "$P" python -m repository_manager.dependency_readiness .'
-        language: system
-        pass_filenames: false
-        always_run: true
-        stages: [manual, pre-push]
       - id: mcp-readme-table
         name: sync MCP tools table in README
         entry: |-
@@ -45,3 +38,7 @@ repos:
         language: system
         pass_filenames: false
         files: ^(README\.md|\.env\.example|mcp_config.*\.json|.*/mcp_config.*\.json|docker/.*compose.*\.ya?ml|.*/auth\.py|.*/mcp_server\.py)$
+  - repo: https://github.com/Knuckles-Team/pipelines
+    rev: ed8ea8ac5989cbc883c149843b311aeecb44e6a2
+    hooks:
+    - id: dependency-readiness

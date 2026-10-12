@@ -90,6 +90,107 @@ Or run the agent server:
 archimate-agent
 ```
 
+## MCP Configuration Examples
+
+<!-- MCP-CONFIG-EXAMPLES:START -->
+
+> **Install the connector-focused `[mcp]` extra.** Examples use `archimate-mcp[mcp]` to add
+> FastMCP / FastAPI through `agent-utilities[mcp]`; the required Agent Utilities core
+> still carries `epistemic-graph[full]`. The `[agent-runtime]` extra additionally
+> enables model orchestration.
+
+#### stdio Transport (local IDEs — Cursor, Claude Desktop, VS Code)
+
+```json
+{
+  "mcpServers": {
+    "archimate-mcp": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "archimate-mcp[mcp]",
+        "archimate-mcp"
+      ],
+      "env": {
+        "ARCHITOOL": "True",
+        "ARCHI_KG_INGEST": "1",
+        "ARCHI_MODEL_PATH": "./model.archimate"
+      }
+    }
+  }
+}
+```
+
+Runtime references require an alias-aware launcher such as GraphOS. Other
+launchers must omit those entries and inject the resolved values through their
+own runtime secret boundary.
+
+#### Streamable-HTTP Transport (networked / production)
+
+```json
+{
+  "mcpServers": {
+    "archimate-mcp": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "archimate-mcp[mcp]",
+        "archimate-mcp",
+        "--transport",
+        "streamable-http",
+        "--port",
+        "8000"
+      ],
+      "env": {
+        "TRANSPORT": "streamable-http",
+        "HOST": "127.0.0.1",
+        "PORT": "8000",
+        "ARCHITOOL": "True",
+        "ARCHI_KG_INGEST": "1",
+        "ARCHI_MODEL_PATH": "./model.archimate"
+      }
+    }
+  }
+}
+```
+
+Alternatively, connect to a pre-deployed Streamable-HTTP instance by `url`:
+
+```json
+{
+  "mcpServers": {
+    "archimate-mcp": {
+      "url": "http://localhost:8000/archimate-mcp/mcp"
+    }
+  }
+}
+```
+
+Run a reviewed container image as a least-privilege stdio child (no
+listener or published port):
+
+```bash
+docker run -i --rm \
+  --read-only \
+  --cap-drop=ALL \
+  --security-opt=no-new-privileges \
+  --pids-limit=256 \
+  --tmpfs /tmp:rw,noexec,nosuid,nodev,size=64m \
+  -e TRANSPORT=stdio \
+  -e ARCHITOOL=True \
+  -e ARCHI_KG_INGEST=1 \
+  -e ARCHI_MODEL_PATH=./model.archimate \
+  registry.example.invalid/archimate-mcp@sha256:<digest> archimate-mcp
+```
+
+For containerized network HTTP, supply an authenticated TLS ingress (or
+direct server TLS), exact `MCP_ALLOWED_HOSTS`, and an exact trusted-proxy
+CIDR policy through the operator-owned deployment profile. The generator
+does not emit an unauthenticated non-loopback listener.
+
+_Auto-generated from the code-read env surface (package vars) — do not edit._
+<!-- MCP-CONFIG-EXAMPLES:END -->
+
 ## Architecture
 See `/docs` for architectural diagrams and further documentation. The model
 engine lives in `archimate_mcp/api/` (`archimate_model.py`, `api_client_archi.py`),
@@ -140,7 +241,6 @@ the detailed transport contract.
 | `TRANSPORT` | `stdio` | MCP transport: `stdio` \| `streamable-http` \| `sse` |
 | `HOST` | `127.0.0.1` | Loopback bind host (set an authenticated ingress explicitly) |
 | `PORT` | `8000` | Bind port (HTTP transports) |
-| `MCP_TOOL_MODE` | `intent` | Tool surface: `intent` \| `condensed` \| `verbose` \| `both` |
 | `MCP_ENABLED_TOOLS` | — | Comma-separated tool allow-list |
 | `MCP_DISABLED_TOOLS` | — | Comma-separated tool deny-list |
 | `MCP_ENABLED_TAGS` | — | Comma-separated tag allow-list |
@@ -158,11 +258,11 @@ the detailed transport contract.
 | `DEBUG` | `False` | Verbose logging |
 | `PYTHONUNBUFFERED` | `1` | Unbuffered stdout (recommended in containers) |
 | `MCP_URL` | `http://localhost:8000/mcp` | URL of the MCP server the agent connects to |
-| `PROVIDER` | `openai` | LLM provider for the agent |
-| `MODEL_ID` | `gpt-4o` | Model id for the agent |
+| `PROVIDER` | — | Operator-configured LLM provider for the agent |
+| `MODEL_ID` | — | Operator-configured model id for the agent |
 | `ENABLE_WEB_UI` | `True` | Serve the AG-UI web interface |
 
-_3 package + 24 inherited variable(s). Auto-generated from `.env.example` + the shared agent-utilities set — do not edit._
+_3 package + 23 inherited variable(s). Auto-generated from `.env.example` + the shared agent-utilities set — do not edit._
 <!-- ENV-VARS-TABLE:END -->
 
 
@@ -215,61 +315,19 @@ The table below is auto-generated from the live server — do not edit by hand.
 
 <!-- MCP-TOOLS-TABLE:START -->
 
-#### Condensed action-routed tools (`MCP_TOOL_MODE=condensed`)
+#### Intent tools
 
-| MCP Tool | Toggle Env Var | Description |
-|----------|----------------|-------------|
-| `archi_element` | `ARCHITOOL` | Create, read, update, delete, list, or search elements. |
-| `archi_folder` | `ARCHITOOL` | Manage organizations (folders) and place items in them. |
-| `archi_model` | `ARCHITOOL` | Manage the model lifecycle and Open Exchange import/export. |
-| `archi_query` | `ARCHITOOL` | Traverse and introspect the model and its vocabulary. |
-| `archi_relationship` | `ARCHITOOL` | Create, read, update, delete, list, or validate relationships. |
-| `archi_view` | `ARCHITOOL` | Create views (diagrams) and place elements/connections on them. |
-| `archimate_ingest_model` | `ARCHITOOL` | Natively ingest the ArchiMate model into epistemic-graph as typed nodes. |
+| MCP Tool | Kind | Description |
+|----------|------|-------------|
+| `archi_element` | intent | Create, read, update, delete, list, or search elements. |
+| `archi_folder` | intent | Manage organizations (folders) and place items in them. |
+| `archi_model` | intent | Manage the model lifecycle and Open Exchange import/export. |
+| `archi_query` | intent | Traverse and introspect the model and its vocabulary. |
+| `archi_relationship` | intent | Create, read, update, delete, list, or validate relationships. |
+| `archi_view` | intent | Create views (diagrams) and place elements/connections on them. |
+| `archimate_ingest_model` | intent | Natively ingest the ArchiMate model into epistemic-graph as typed nodes. |
 
-#### Verbose 1:1 API-mapped tools (`MCP_TOOL_MODE=verbose` or `both`)
-
-<details>
-<summary>32 per-operation tools — one per public API method (click to expand)</summary>
-
-| MCP Tool | Toggle Env Var | Description |
-|----------|----------------|-------------|
-| `archimate_add_connection_to_view` | `ARCHI_APITOOL` | Invoke the add_connection_to_view operation. |
-| `archimate_add_element` | `ARCHI_APITOOL` | Invoke the add_element operation. |
-| `archimate_add_element_to_view` | `ARCHI_APITOOL` | Invoke the add_element_to_view operation. |
-| `archimate_add_folder` | `ARCHI_APITOOL` | Invoke the add_folder operation. |
-| `archimate_add_relationship` | `ARCHI_APITOOL` | Invoke the add_relationship operation. |
-| `archimate_create_view` | `ARCHI_APITOOL` | Invoke the create_view operation. |
-| `archimate_delete_element` | `ARCHI_APITOOL` | Invoke the delete_element operation. |
-| `archimate_delete_relationship` | `ARCHI_APITOOL` | Invoke the delete_relationship operation. |
-| `archimate_element_types` | `ARCHI_APITOOL` | Invoke the element_types operation. |
-| `archimate_elements_by_type` | `ARCHI_APITOOL` | Invoke the elements_by_type operation. |
-| `archimate_export_open_exchange` | `ARCHI_APITOOL` | Invoke the export_open_exchange operation. |
-| `archimate_find_elements` | `ARCHI_APITOOL` | Invoke the find_elements operation. |
-| `archimate_get_element` | `ARCHI_APITOOL` | Invoke the get_element operation. |
-| `archimate_get_relationship` | `ARCHI_APITOOL` | Invoke the get_relationship operation. |
-| `archimate_get_view` | `ARCHI_APITOOL` | Invoke the get_view operation. |
-| `archimate_import_open_exchange` | `ARCHI_APITOOL` | Invoke the import_open_exchange operation. |
-| `archimate_ingest_to_kg` | `ARCHI_APITOOL` | Push the current model into epistemic-graph as typed OWL nodes. |
-| `archimate_list_elements` | `ARCHI_APITOOL` | Invoke the list_elements operation. |
-| `archimate_list_folders` | `ARCHI_APITOOL` | Invoke the list_folders operation. |
-| `archimate_list_relationships` | `ARCHI_APITOOL` | Invoke the list_relationships operation. |
-| `archimate_list_views` | `ARCHI_APITOOL` | Invoke the list_views operation. |
-| `archimate_load` | `ARCHI_APITOOL` | Invoke the load operation. |
-| `archimate_model_summary` | `ARCHI_APITOOL` | Invoke the model_summary operation. |
-| `archimate_move_to_folder` | `ARCHI_APITOOL` | Invoke the move_to_folder operation. |
-| `archimate_neighbors` | `ARCHI_APITOOL` | Invoke the neighbors operation. |
-| `archimate_new_model` | `ARCHI_APITOOL` | Invoke the new_model operation. |
-| `archimate_relationship_types` | `ARCHI_APITOOL` | Invoke the relationship_types operation. |
-| `archimate_relationships_of` | `ARCHI_APITOOL` | Invoke the relationships_of operation. |
-| `archimate_save` | `ARCHI_APITOOL` | Invoke the save operation. |
-| `archimate_update_element` | `ARCHI_APITOOL` | Invoke the update_element operation. |
-| `archimate_update_relationship` | `ARCHI_APITOOL` | Invoke the update_relationship operation. |
-| `archimate_validate_relationship` | `ARCHI_APITOOL` | Return True if ``type`` is plausible between the given endpoints. |
-
-</details>
-
-_7 action-routed tool(s) · 32 verbose 1:1 tool(s). Each is enabled unless its `<DOMAIN>TOOL` toggle is set false; `MCP_TOOL_MODE` selects the surface (**`intent` default** — the six verb-tools, granular set loaded on demand · `condensed` action-routed · `verbose` 1:1 · `both`). Auto-generated — do not edit._
+_7 intent tool(s) · 0 operation(s). Call an operation as `act(action='<operation>', params={...})` (`ask` for reads); `find(action='describe', params={'action': '<operation>'})` returns its arguments. An operation is enabled unless its `<DOMAIN>TOOL` toggle is set false. Auto-generated — do not edit._
 <!-- MCP-TOOLS-TABLE:END -->
 
 ## Documentation

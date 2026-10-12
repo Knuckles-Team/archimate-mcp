@@ -63,3 +63,8 @@ archimate-mcp --transport http --host 0.0.0.0 --port 8000
 See **[Installation](installation.md)** and **[Deployment](deployment.md)** for the
 full matrix (PyPI extras, Docker image, all transports, the A2A agent server,
 reverse proxy, and DNS).
+
+## Spec delivery
+
+[Spec delivery dashboard](spec-delivery/). No owned specs are recorded yet.
+Missing requirement and code mappings remain unknown.
