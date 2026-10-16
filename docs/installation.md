@@ -21,8 +21,8 @@ The base install is intentionally minimal. Install the extra for what the operat
 
 | Extra | Install | Pulls in |
 |---|---|---|
-| `mcp` | `pip install "archimate-mcp[mcp]"` | FastMCP MCP-server runtime (`agent-utilities[mcp]`) |
-| `agent` | `pip install "archimate-mcp[agent]"` | Agent runtime + Logfire tracing (`agent-utilities[agent-runtime,logfire]`) |
+| `mcp` | `pip install "archimate-mcp[mcp]"` | FastMCP MCP-server runtime (`agent-connector-sdk`) |
+| `agent` | `pip install "archimate-mcp[agent]"` | Agent runtime + Logfire tracing (`agent-connector-sdk`) |
 | `all` | `pip install "archimate-mcp[all]"` | Everything above |
 | `test` | `pip install "archimate-mcp[test]"` | `pytest`, `pytest-asyncio`, `pytest-cov`, `pytest-xdist` |
 
