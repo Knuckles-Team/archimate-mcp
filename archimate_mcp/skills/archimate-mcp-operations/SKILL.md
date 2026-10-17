@@ -2,12 +2,12 @@
 name: archimate-mcp-operations
 skill_type: skill
 description: >-
-  Operate archimate-mcp through its governed MCP and GraphOS capabilities, including archimate kg ingestion, archimate model analysis, archimate model authoring. Use when a request requires this provider's read, change, automation, ingestion, troubleshooting, or evidence workflows.
+  Operate archimate-mcp through its governed MCP and Arbora capabilities, including archimate kg ingestion, archimate model analysis, archimate model authoring. Use when a request requires this provider's read, change, automation, ingestion, troubleshooting, or evidence workflows.
 ---
 
 # Archimate Mcp Operations
 
-Use the provider's governed MCP tools through GraphOS delegation.
+Use the provider's governed MCP tools through Arbora delegation.
 
 ## Workflow
 

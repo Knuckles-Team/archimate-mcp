@@ -1,5 +1,5 @@
 {
-  "api_version": "graphos.io/v1",
+  "api_version": "arbora.io/v1",
   "artifacts": {
     "archimate_mcp/connectors/mcp_source_presets.json": "84408000845332434e2eb6643617d1f96069a8702b808975b917bf8670d722c9",
     "archimate_mcp/connectors/tool_schema_fingerprints.json": "3f0ad1ef01ba804f6b18c6eedca7a1b74b98d6c54aecaaf456ea91165435f483",
