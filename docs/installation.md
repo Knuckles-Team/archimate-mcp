@@ -22,14 +22,8 @@ The base install is intentionally minimal. Install the extra for what the operat
 | Extra | Install | Pulls in |
 |---|---|---|
 | `mcp` | `pip install "archimate-mcp[mcp]"` | FastMCP MCP-server runtime (`agent-connector-sdk`) |
-| `agent` | `pip install "archimate-mcp[agent]"` | Agent runtime + Logfire tracing (`agent-connector-sdk`) |
 | `all` | `pip install "archimate-mcp[all]"` | Everything above |
 | `test` | `pip install "archimate-mcp[test]"` | `pytest`, `pytest-asyncio`, `pytest-cov`, `pytest-xdist` |
-
-```bash
-# Typical: run the MCP server and the A2A agent
-pip install "archimate-mcp[all]"
-```
 
 ## From source
 
@@ -60,7 +54,6 @@ docker run --rm -i \
   example/archimate-mcp@sha256:<digest>        # stdio transport (default)
 ```
 
-For an HTTP server with a published port and the A2A agent, see
 [Deployment](deployment.md).
 
 ## Verify the install
@@ -72,6 +65,5 @@ python -c "import archimate_mcp; print(archimate_mcp.__version__)"
 
 ## Next steps
 
-- **[Deployment](deployment.md)** — run it as a long-lived MCP or agent server behind Caddy + DNS.
 - **[Usage](usage.md)** — call the tools, the `ArchiApi` client, and the CLI.
 - **[Configuration](deployment.md#configuration-environment)** — every environment variable.

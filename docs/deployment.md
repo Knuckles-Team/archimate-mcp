@@ -63,13 +63,10 @@ Store the real remote URL, outbound identity reference, and TLS-profile referenc
 <!-- END GENERATED: deployment-options -->
 
 This page covers running `archimate-mcp` as a long-lived server: the transports, a
-Docker Compose stack, the companion A2A agent server, putting it behind a Caddy
 reverse proxy, and giving it a DNS name with Technitium.
 
 > `archimate-mcp` ships **two** entry points: an **MCP server** (console script
-> `archimate-mcp`) and an **A2A agent server** (console script `archimate-agent`).
 > The MCP server is a typed, deterministic tool surface a policy router or agent
-> calls; the agent server wraps that surface as a Pydantic-AI agent for
 > graph-orchestrated workflows.
 
 ## Run the MCP server
@@ -157,21 +154,11 @@ docker compose -f docker/mcp.compose.yml up -d
 docker compose -f docker/mcp.compose.yml logs -f
 ```
 
-## A2A agent server
-
-The companion agent server (console script `archimate-agent`) wraps the same tool
-surface as a Pydantic-AI agent. It connects to a running MCP server via `MCP_URL`
-and exposes the agent capabilities declared in
-[`a2a.json`](https://github.com/Knuckles-Team/archimate-mcp/blob/main/a2a.json).
-
-```bash
 # Point the agent at the MCP server and serve it on :8001
 export MCP_URL=http://archimate-mcp:8000/mcp
-archimate-agent --host 0.0.0.0 --port 8001
 ```
 
 A combined stack from
-[`docker/agent.compose.yml`](https://github.com/Knuckles-Team/archimate-mcp/blob/main/docker/agent.compose.yml)
 runs the MCP server and wires the agent to it by container name:
 
 ```yaml
@@ -189,7 +176,6 @@ services:
     ports:
       - "8000:8000"
 
-  archimate-agent:
     image: example/archimate-mcp@sha256:<digest>
     command: ["archimate-agent", "--host", "0.0.0.0", "--port", "8001"]
     depends_on: [archimate-mcp]
@@ -205,7 +191,6 @@ volumes:
 ```
 
 ```bash
-docker compose -f docker/agent.compose.yml up -d
 ```
 
 ## Behind a Caddy reverse proxy

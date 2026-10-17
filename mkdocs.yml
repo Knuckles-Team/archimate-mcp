@@ -1,5 +1,4 @@
 site_name: "archimate-mcp"
-site_description: "A self-contained ArchiMate model engine + MCP Server + A2A agent — full ArchiMate 3.x authoring for AI agents with Open Group Model Exchange round-trip."
 site_url: "https://knuckles-team.github.io/archimate-mcp/"
 repo_name: "Knuckles-Team/archimate-mcp"
 repo_url: "https://github.com/Knuckles-Team/archimate-mcp"

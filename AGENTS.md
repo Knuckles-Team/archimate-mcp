@@ -4,7 +4,6 @@
 > in sync. Edit **this** file, not `CLAUDE.md`.
 
 ## Project Structure
-- `archimate_mcp/`: Main server code (ArchiMate model engine, MCP, A2A)
 - `tests/`: Test suite
 - `docs/`: Architecture documentation
 

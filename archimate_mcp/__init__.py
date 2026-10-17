@@ -41,7 +41,6 @@ def _import_module_safely(module_name: str):
 #: queries, mapped to a substring identifying the module they probe.
 _AVAILABILITY_FLAGS = {
     "_MCP_AVAILABLE": "mcp_server",
-    "_AGENT_AVAILABLE": "agent_server",
 }
 
 
