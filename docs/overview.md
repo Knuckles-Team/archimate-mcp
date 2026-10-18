@@ -1,7 +1,6 @@
 # Overview
 
 `archimate-mcp` is a self-contained **ArchiMate model engine** exposed as a Model
-Context Protocol server and an A2A agent. It gives AI agents the full ArchiMate 3.x
 authoring surface — create, load, and save models; full CRUD on elements,
 relationships, folders, and views; query and traverse the model; and import/export
 the **Open Group Model Exchange File Format** so models open directly in
@@ -20,8 +19,6 @@ service is required: the engine reads and writes a local Open Exchange Format fi
   packages, but drives the local engine rather than a remote server.
 - **MCP tools** (`archimate_mcp/mcp/mcp_archi.py`) — thin FastMCP wrappers that add no
   business logic; the entire authoring surface lives in `api/`.
-- **A2A agent** (`archimate_mcp/agent_server.py`) — wraps the tool surface as a
-  Pydantic-AI agent for graph-orchestrated workflows.
 
 ## Tool surface
 

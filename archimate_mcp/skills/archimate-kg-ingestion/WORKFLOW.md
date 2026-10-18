@@ -20,7 +20,7 @@ resolve through the shared `[configured-endpoint]` ontology.
 
 ## Prerequisites & environment
 Connect via the `mcp-client` skill against the **`archimate-mcp`** MCP server, with a
-reachable epistemic-graph engine (graph-os). Ingestion is authoritative: engine,
+reachable epistemic-graph engine (arbora). Ingestion is authoritative: engine,
 validation, and transaction failures are surfaced explicitly.
 
 | Variable | Required | Notes |

@@ -1,4 +1,4 @@
-"""archimate-mcp: ArchiMate model engine + MCP Server + A2A Server."""
+"""archimate-mcp: ArchiMate model engine + MCP Server."""
 
 import importlib
 import inspect
@@ -9,7 +9,6 @@ __all__: list[str] = []
 
 CORE_MODULES = ["archimate_mcp.api_client"]
 OPTIONAL_MODULES = {
-    "archimate_mcp.agent_server": "agent",
     "archimate_mcp.mcp_server": "mcp",
 }
 
@@ -42,7 +41,6 @@ def _import_module_safely(module_name: str):
 #: queries, mapped to a substring identifying the module they probe.
 _AVAILABILITY_FLAGS = {
     "_MCP_AVAILABLE": "mcp_server",
-    "_AGENT_AVAILABLE": "agent_server",
 }
 
 

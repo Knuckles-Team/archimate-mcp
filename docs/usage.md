@@ -75,14 +75,3 @@ api = get_client()        # reads ARCHI_MODEL_PATH from the environment / .env
 
 The package installs two console scripts:
 
-```bash
-# MCP server (stdio by default; --transport for HTTP/SSE)
-archimate-mcp --transport streamable-http --host 0.0.0.0 --port 8000
-
-# A2A agent server — connects to a running MCP server via MCP_URL
-MCP_URL=http://localhost:8000/mcp archimate-agent --host 0.0.0.0 --port 8001
-```
-
-The agent capabilities advertised over A2A are declared in
-[`a2a.json`](https://github.com/Knuckles-Team/archimate-mcp/blob/main/a2a.json). See
-[Deployment](deployment.md#a2a-agent-server) for wiring the agent to the MCP server.

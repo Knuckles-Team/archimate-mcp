@@ -1,6 +1,5 @@
 # archimate-mcp
 
-A self-contained **ArchiMate model engine** exposed as an **MCP server and A2A
 agent** — full ArchiMate 3.x authoring for AI agents, with round-trip Open Group
 Model Exchange File Format so models open directly in
 [Archi](https://www.archimatetool.com/).
@@ -28,8 +27,6 @@ ships its own dependency-light engine built on the Python standard library
   `archi_view`, `archi_folder`, and `archi_query`, spanning the complete ArchiMate
   vocabulary (Strategy, Business, Application, Technology, Physical, Motivation, and
   Implementation layers) with structural validation.
-- **An A2A agent server** — the `archimate-agent` console script wraps the same
-  tool surface as a Pydantic-AI agent for graph-orchestrated workflows.
 
 Models authored through `archimate-mcp` round-trip the Open Group Model Exchange
 File Format, so they open directly in Archi and any conformant ArchiMate tool.
@@ -39,9 +36,7 @@ File Format, so they open directly in Archi and any conformant ArchiMate tool.
 <div class="grid cards" markdown>
 
 - :material-rocket-start: **[Installation](installation.md)** — pip, source, extras, and the prebuilt Docker image.
-- :material-server-network: **[Deployment](deployment.md)** — run the MCP and agent servers, Docker Compose, Caddy + Technitium.
 - :material-console: **[Usage](usage.md)** — the MCP tools, the `ArchiApi` client, and the CLI entry points.
-- :material-sitemap: **[Overview](overview.md)** — the model engine, layered façade, and MCP/A2A surface.
 - :material-tag-multiple: **[Concepts](concepts.md)** — the `CONCEPT:ARCHI-*` registry.
 
 </div>
@@ -61,7 +56,6 @@ archimate-mcp --transport http --host 0.0.0.0 --port 8000
 ```
 
 See **[Installation](installation.md)** and **[Deployment](deployment.md)** for the
-full matrix (PyPI extras, Docker image, all transports, the A2A agent server,
 reverse proxy, and DNS).
 
 ## Spec delivery

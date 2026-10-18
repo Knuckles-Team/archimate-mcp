@@ -34,7 +34,7 @@ resolve through the shared `http://knuckles.team/kg#` ontology.
 
 ## Prerequisites & environment
 Connect via the `mcp-client` skill against the **`archimate-mcp`** MCP server, with a
-reachable epistemic-graph engine (graph-os). Ingestion is **best-effort**: with no
+reachable epistemic-graph engine (arbora). Ingestion is **best-effort**: with no
 engine it cleanly no-ops (`{"ingested": null}`).
 
 | Variable | Required | Notes |

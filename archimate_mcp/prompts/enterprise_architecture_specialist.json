@@ -4,7 +4,7 @@
   "schema_version": "1.0",
   "prompt_version": "0.1.0",
   "source": "archimate-mcp",
-  "extends": "agent-utilities:base",
+  "extends": "agent-connector-sdk:base",
   "compose": "append",
   "description": "ArchiMate enterprise-architecture specialist: author, analyze, and knowledge-graph-ingest ArchiMate 3.x models over the archimate-mcp MCP server.",
   "metadata": {

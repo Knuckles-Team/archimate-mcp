@@ -752,7 +752,7 @@ sync:
   updated_field: null
   pagination: null
   doc_type: archimate-element
-  tool_schema_sha256: b8ddbc22df54353480a9724c58a733d0f6798526e8af755303a3a850517b8cc8
+  tool_schema_sha256: 54a5835cb173ae413af5ae9dd795df6564951dfa8cacea48b4b896b7ad710594
   raw:
     server: archimate-mcp
     tool: archi_element
@@ -776,7 +776,7 @@ sync:
   updated_field: null
   pagination: null
   doc_type: archimate-relationship
-  tool_schema_sha256: 0280cde5322dd2e3b45326483c9702e46ef1b2a2648a35d24f2b8fb52137c19d
+  tool_schema_sha256: 0fdfdf904150d5ef9001480eee25d22ad9549535ca71b269a0223d785b019b57
   raw:
     server: archimate-mcp
     tool: archi_relationship

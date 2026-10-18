@@ -1,7 +1,6 @@
 # archimate-mcp
 
 A self-contained **ArchiMate model engine** exposed as a Model Context
-Protocol (MCP) server and an A2A agent. It gives AI agents full ArchiMate 3.x
 authoring capabilities — create/load/save models, full CRUD on elements,
 relationships, folders, and views (diagrams), query/traverse the model, and
 import/export the **Open Group Model Exchange File Format** so the models open
@@ -11,7 +10,6 @@ Archi has no native server API, so `archimate-mcp` ships its own dependency-ligh
 engine built on the Python standard library (`xml.etree.ElementTree`).
 
 > **Documentation** — Installation, deployment, usage across the API, CLI, and MCP
-> interfaces, and the A2A agent server are maintained in the
 > [official documentation](https://knuckles-team.github.io/archimate-mcp/).
 
 ## Table of Contents
@@ -36,8 +34,7 @@ Pick the extra that matches what the operator want to run:
 
 | Extra | Installs | Use when |
 |-------|----------|----------|
-| `archimate-mcp[mcp]` | Connector-focused MCP server (`agent-utilities[mcp]` — FastMCP/FastAPI + `epistemic-graph[full]`) | The operator only run the **MCP server** (smallest install / image) |
-| `archimate-mcp[agent]` | Agent runtime (`agent-utilities[agent-runtime,logfire]` — model orchestration + `epistemic-graph[full]`) | The operator run the **integrated agent** |
+| `archimate-mcp[mcp]` | Connector-focused MCP server (`agent-connector-sdk` — FastMCP/FastAPI + `epistemic-graph[full]`) | The operator only run the **MCP server** (smallest install / image) |
 | `archimate-mcp[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
 
 ```bash
@@ -45,34 +42,28 @@ Pick the extra that matches what the operator want to run:
 uv pip install "archimate-mcp[mcp]"
 
 # Agent runtime (adds model orchestration to the shared graph engine)
-uv pip install "archimate-mcp[agent]"
 
 # Everything (development)
 uv pip install "archimate-mcp[all]"      # or: python -m pip install "archimate-mcp[all]"
 ```
 
-### Container images (`:mcp` vs `:agent`)
+### Container images (`:mcp`)
 
-One multi-stage `docker/Dockerfile` builds two right-sized images, selected by `--target`:
+One multi-stage `docker/Dockerfile` builds the MCP-only image (`--target mcp`):
 
 | Image tag | Build target | Contents | Entrypoint |
 |-----------|--------------|----------|------------|
 | `example/archimate-mcp:mcp` | `--target mcp` | `archimate-mcp[mcp]` — **connector-focused**, includes `epistemic-graph[full]`; no model-orchestration stack | `archimate-mcp` |
-| `example/archimate-mcp@sha256:<digest>` | `--target agent` (default) | `archimate-mcp[agent]` — **agent runtime**, model orchestration + `epistemic-graph[full]` | `archimate-agent` |
 
 ```bash
 docker build --target mcp   -t example/archimate-mcp:mcp    docker/   # connector-focused MCP server
-docker build --target agent -t example/archimate-mcp:agent-local docker/   # agent runtime
 ```
 
-`docker/mcp.compose.yml` runs the connector-focused `:mcp` server; `docker/agent.compose.yml` runs the
 agent (`immutable agent digest`) with a co-located `:mcp` sidecar.
 
 ### Knowledge-graph database (`epistemic-graph`)
 
-Both `[mcp]` and `[agent]` carry the **epistemic-graph** engine through the required
-Agent Utilities core dependency (`epistemic-graph[full]`). The `[mcp]` extra keeps
-the server connector-focused; `[agent]` also enables model orchestration. Local
+Agent Connector SDK core dependency (`epistemic-graph[full]`). The `[mcp]` extra keeps
 deployments can use the bundled engine. For production or shared state, run
 **epistemic-graph as a dedicated database service** and configure the runtime to use it.
 Deployment recipes (single-node + Raft HA), connection configuration, and architecture
@@ -85,7 +76,6 @@ Run the MCP server directly:
 archimate-mcp
 ```
 
-Or run the agent server:
 ```bash
 archimate-agent
 ```
@@ -95,7 +85,7 @@ archimate-agent
 <!-- MCP-CONFIG-EXAMPLES:START -->
 
 > **Install the connector-focused `[mcp]` extra.** Examples use `archimate-mcp[mcp]` to add
-> FastMCP / FastAPI through `agent-utilities[mcp]`; the required Agent Utilities core
+> FastMCP / FastAPI through `agent-connector-sdk`; the required Agent Connector SDK core
 > still carries `epistemic-graph[full]`. The `[agent-runtime]` extra additionally
 > enables model orchestration.
 
@@ -121,7 +111,7 @@ archimate-agent
 }
 ```
 
-Runtime references require an alias-aware launcher such as GraphOS. Other
+Runtime references require an alias-aware launcher such as Arbora. Other
 launchers must omit those entries and inject the resolved values through their
 own runtime secret boundary.
 
@@ -234,7 +224,7 @@ the detailed transport contract.
 | `ARCHI_KG_INGEST` | `1` |  |
 | `ARCHITOOL` | `True` |  |
 
-#### Inherited agent-utilities variables (apply to every connector)
+#### Inherited agent-connector-sdk variables (apply to every connector)
 
 | Variable | Example | Description |
 |----------|---------|-------------|
@@ -260,11 +250,9 @@ the detailed transport contract.
 | `MCP_URL` | `http://localhost:8000/mcp` | URL of the MCP server the agent connects to |
 | `PROVIDER` | — | Operator-configured LLM provider for the agent |
 | `MODEL_ID` | — | Operator-configured model id for the agent |
-| `ENABLE_WEB_UI` | `True` | Serve the AG-UI web interface |
 
-_3 package + 23 inherited variable(s). Auto-generated from `.env.example` + the shared agent-utilities set — do not edit._
+_3 package + 23 inherited variable(s). Auto-generated from `.env.example` + the shared agent-connector-sdk set — do not edit._
 <!-- ENV-VARS-TABLE:END -->
-
 
 Every variable the server reads, grouped by concern.
 
@@ -301,14 +289,6 @@ The toggle is in the [MCP Tools](#mcp-tools) table below (`ARCHITOOL`).
 | `EUNOMIA_POLICY_FILE` | Embedded policy file | `mcp_policies.json` |
 | `EUNOMIA_REMOTE_URL` | Remote Eunomia server URL | — |
 
-### Agent CLI (full `[agent]` runtime only)
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `MCP_URL` | URL of the MCP server the agent connects to | `http://localhost:8000/mcp` |
-| `PROVIDER` | LLM provider (e.g. `openai`) | `openai` |
-| `MODEL_ID` | Model id (e.g. `gpt-4o`) | `gpt-4o` |
-| `ENABLE_WEB_UI` | Serve the AG-UI web interface | `True` |
-
 ## MCP Tools
 
 The table below is auto-generated from the live server — do not edit by hand.
@@ -339,35 +319,31 @@ the recommended reference for installation, deployment, and day-to-day operation
 | Page | Contents |
 |---|---|
 | [Installation](https://knuckles-team.github.io/archimate-mcp/installation/) | pip, source, extras, prebuilt Docker image |
-| [Deployment](https://knuckles-team.github.io/archimate-mcp/deployment/) | run the MCP and agent servers, Compose, Caddy + Technitium, env config |
 | [Usage](https://knuckles-team.github.io/archimate-mcp/usage/) | the MCP tools, the `ArchiApi` client, the CLI |
-| [Overview](https://knuckles-team.github.io/archimate-mcp/overview/) | the model engine, layered façade, MCP/A2A surface |
 | [Concepts](https://knuckles-team.github.io/archimate-mcp/concepts/) | concept registry (`CONCEPT:ARCHI-*`) |
 
 `AGENTS.md` is the canonical contributor/agent guidance.
 
+<!-- BEGIN agent-connector-sdk-deployment (generated; do not edit between markers) -->
 
-<!-- BEGIN agent-utilities-deployment (generated; do not edit between markers) -->
+## Deploy with `agent-connector-sdk-deployment`
 
-## Deploy with `agent-utilities-deployment`
-
-Provision this package with the consolidated **`agent-utilities-deployment`**
+Provision this package with the consolidated **`agent-connector-sdk-deployment`**
 workflow. It selects an installed-package, editable-source, or immutable-container
 path; records only runtime secret and TLS-profile references in `AgentConfig`; and
 runs doctor, registration, policy, observability, and rollback gates. Ask your agent
-to **"deploy `archimate-mcp` with agent-utilities-deployment"**.
+to **"deploy `archimate-mcp` with agent-connector-sdk-deployment"**.
 
 | Install mode | Command |
 |------|---------|
 | Installed package | `uv tool install "archimate-mcp[mcp]"`, then run `archimate-mcp` |
-| Editable source | `uv pip install -e ".[agent]"`, then run `archimate-mcp` |
 | Immutable container | deploy `registry.example.invalid/archimate-mcp@sha256:<digest>` through the operator-selected orchestrator |
 
 The repository embeds no deployment profile, credential value, certificate path, or
 environment-specific endpoint. Supply those at runtime through `AgentConfig` and the
 configured secret provider.
 
-<!-- END agent-utilities-deployment -->
+<!-- END agent-connector-sdk-deployment -->
 
 <!-- GOVERNED-CAPABILITY:START -->
 ## Governed capability contract
@@ -382,5 +358,5 @@ historical per-task skill wrappers.
 Runtime endpoints, credentials, certificate trust, tenant identity, retention,
 and observability policy are deployment inputs and are never packaged values.
 See [Configuration, trust, and privacy](docs/configuration.md) before enabling a
-network transport, connector ingestion, GraphOS delegation, or trace export.
+network transport, connector ingestion, Arbora delegation, or trace export.
 <!-- GOVERNED-CAPABILITY:END -->
