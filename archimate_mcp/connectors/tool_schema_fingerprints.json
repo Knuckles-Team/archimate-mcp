@@ -3,7 +3,7 @@
   "connector": "archimate-mcp",
   "schema_version": "1",
   "tools": {
-    "archi_element": "54a5835cb173ae413af5ae9dd795df6564951dfa8cacea48b4b896b7ad710594",
-    "archi_relationship": "0fdfdf904150d5ef9001480eee25d22ad9549535ca71b269a0223d785b019b57"
+    "archimate_list_elements": "c1f24753b1fbe3cdd7a4e991d9075321cb79f81ad992a7e910a11076a9c0ff90",
+    "archimate_list_relationships": "16d5a3430cbcf627cedff452ce242680b96fbd4c785fbe7871b145fbb946d817"
   }
 }
