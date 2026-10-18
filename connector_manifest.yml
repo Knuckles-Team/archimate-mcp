@@ -743,8 +743,8 @@ schema_mappings:
 sync:
 - preset: archimate-elements
   server: archimate-mcp
-  tool: archi_element
-  action: list
+  tool: archimate_list_elements
+  action: null
   records_path: ''
   id_field: id
   title_field: name
@@ -752,13 +752,10 @@ sync:
   updated_field: null
   pagination: null
   doc_type: archimate-element
-  tool_schema_sha256: 54a5835cb173ae413af5ae9dd795df6564951dfa8cacea48b4b896b7ad710594
+  tool_schema_sha256: c1f24753b1fbe3cdd7a4e991d9075321cb79f81ad992a7e910a11076a9c0ff90
   raw:
     server: archimate-mcp
-    tool: archi_element
-    action: list
-    params:
-      params_json: '{}'
+    tool: archimate_list_elements
     records_path: ''
     id_field: id
     title_field: name
@@ -767,8 +764,8 @@ sync:
     doc_type: archimate-element
 - preset: archimate-relationships
   server: archimate-mcp
-  tool: archi_relationship
-  action: list
+  tool: archimate_list_relationships
+  action: null
   records_path: ''
   id_field: id
   title_field: name
@@ -776,13 +773,10 @@ sync:
   updated_field: null
   pagination: null
   doc_type: archimate-relationship
-  tool_schema_sha256: 0fdfdf904150d5ef9001480eee25d22ad9549535ca71b269a0223d785b019b57
+  tool_schema_sha256: 16d5a3430cbcf627cedff452ce242680b96fbd4c785fbe7871b145fbb946d817
   raw:
     server: archimate-mcp
-    tool: archi_relationship
-    action: list
-    params:
-      params_json: '{}'
+    tool: archimate_list_relationships
     records_path: ''
     id_field: id
     title_field: name
