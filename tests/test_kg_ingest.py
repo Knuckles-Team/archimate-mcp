@@ -185,7 +185,7 @@ async def test_ingest_entities_writes_nodes_and_edges(ingest):
         "archimate:model:m1",
         "archimate:node:n1",
     }
-    assert request.relationships[0].relation_reference.endswith("/relations/hasElement")
+    assert request.relationships[0].relation_reference.endswith("/hasElement")
 
 
 @pytest.mark.asyncio

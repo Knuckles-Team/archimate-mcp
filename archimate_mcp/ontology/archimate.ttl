@@ -10,11 +10,8 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:BusinessTask a owl:Class ;
-    rdfs:label "Business Task" ;
-    rdfs:comment """A unit of business behaviour within a process (e.g. a Camunda
-    user/service task). A BusinessTask is part of a BusinessProcess.""" ;
-    rdfs:subClassOf :BusinessProcess .
+:BusinessTask a owl:Class .
+
 
 :Change rdfs:subClassOf :BusinessProcess .
 
@@ -60,25 +57,18 @@
     :BusinessProcess/:ApplicationComponent in ontology_quant.ttl;
     :BusinessCapability in ontology_leanix.ttl). It never redefines them.
 
-    CONCEPT:KG-2.9 — Enterprise OS vendor-neutral ontology.""" ;
-    owl:imports <http://knuckles.team/kg> .
+    CONCEPT:KG-2.9 — Enterprise OS vendor-neutral ontology.""" .
+
 
 :ErpNextIssue rdfs:subClassOf :ApplicationEvent .
 
 :ApplicationEvent a owl:Class ;
-    rdfs:label "Application Event" ;
-    rdfs:comment """Canonical ArchiMate 3.2 Application-layer event: an
-    ITSM-style state change such as an unplanned interruption (incident). The
-    vendor-neutral anchor that ServiceNow incidents, ERPNext issues, and Camunda
-    process incidents all resolve to.""" ;
     rdfs:seeAlso <https://pubs.opengroup.org/architecture/archimate3-doc/chap09.html> .
 
+
 :BusinessActor a owl:Class ;
-    rdfs:label "Business Actor" ;
-    rdfs:comment """Canonical ArchiMate Business Actor: a person or organizational
-    entity that performs behaviour. The anchor that ERPNext Employees/Customers
-    and ITSM Persons resolve to.""" ;
     rdfs:seeAlso <https://pubs.opengroup.org/architecture/archimate3-doc/chap08.html> .
+
 
 
 # =========================================================================== #
@@ -126,9 +116,8 @@
 
 
 # --- Strategy layer element types ---
-:Resource a owl:Class ;
-    rdfs:label "Resource" ;
-    rdfs:subClassOf :StrategyElement .
+:Resource a owl:Class .
+
 :Capability a owl:Class ;
     rdfs:label "Capability" ;
     rdfs:subClassOf :StrategyElement .
@@ -140,7 +129,7 @@
     rdfs:subClassOf :StrategyElement .
 
 # --- Business layer element types ---
-:BusinessActor rdfs:subClassOf :BusinessLayerElement .
+
 :BusinessRole a owl:Class ;
     rdfs:label "Business Role" ;
     rdfs:subClassOf :BusinessLayerElement .
@@ -163,9 +152,8 @@
 :BusinessService a owl:Class ;
     rdfs:label "Business Service" ;
     rdfs:subClassOf :BusinessLayerElement .
-:BusinessObject a owl:Class ;
-    rdfs:label "Business Object" ;
-    rdfs:subClassOf :BusinessLayerElement .
+:BusinessObject a owl:Class .
+
 :Contract a owl:Class ;
     rdfs:label "Contract" ;
     rdfs:subClassOf :BusinessLayerElement .
@@ -193,7 +181,6 @@
 :ApplicationProcess a owl:Class ;
     rdfs:label "Application Process" ;
     rdfs:subClassOf :ApplicationLayerElement .
-:ApplicationEvent rdfs:subClassOf :ApplicationLayerElement .
 :ApplicationService a owl:Class ;
     rdfs:label "Application Service" ;
     rdfs:subClassOf :ApplicationLayerElement .
@@ -238,9 +225,8 @@
 :TechnologyService a owl:Class ;
     rdfs:label "Technology Service" ;
     rdfs:subClassOf :TechnologyLayerElement .
-:Artifact a owl:Class ;
-    rdfs:label "Artifact" ;
-    rdfs:subClassOf :TechnologyLayerElement .
+:Artifact a owl:Class .
+
 
 # --- Physical layer element types ---
 :Equipment a owl:Class ;
@@ -263,21 +249,17 @@
 :Driver a owl:Class ;
     rdfs:label "Driver" ;
     rdfs:subClassOf :MotivationElement .
-:Assessment a owl:Class ;
-    rdfs:label "Assessment" ;
-    rdfs:subClassOf :MotivationElement .
-:Goal a owl:Class ;
-    rdfs:label "Goal" ;
-    rdfs:subClassOf :MotivationElement .
+:Assessment a owl:Class .
+
+:Goal a owl:Class .
+
 :Outcome a owl:Class ;
     rdfs:label "Outcome" ;
     rdfs:subClassOf :MotivationElement .
-:Principle a owl:Class ;
-    rdfs:label "Principle" ;
-    rdfs:subClassOf :MotivationElement .
-:Requirement a owl:Class ;
-    rdfs:label "Requirement" ;
-    rdfs:subClassOf :MotivationElement .
+:Principle a owl:Class .
+
+:Requirement a owl:Class .
+
 :Constraint a owl:Class ;
     rdfs:label "Constraint" ;
     rdfs:subClassOf :MotivationElement .
@@ -414,3 +396,8 @@
     rdfs:comment "ArchiMate Triggering relationship: a temporal/causal trigger from one behaviour to the next." ;
     rdfs:domain :ArchimateElement ;
     rdfs:range :ArchimateElement .
+
+# ontology-codemod R3
+<http://knuckles.team/kg#ArchimateElement> rdfs:subClassOf <http://knuckles.team/kg#ArchiMateElement> .
+<http://knuckles.team/kg#Device> rdfs:subClassOf <http://knuckles.team/kg/infrastructure#Device> .
+<http://knuckles.team/kg#Node> rdfs:subClassOf <http://knuckles.team/kg/infrastructure#Node> .
