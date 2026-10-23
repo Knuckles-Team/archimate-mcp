@@ -1,9 +1,0 @@
-{
-  "algorithm": "agent-connector-sdk:mcp-tool-contract-compat:v2",
-  "connector": "archimate-mcp",
-  "schema_version": "1",
-  "tools": {
-    "archimate_list_elements": "c1f24753b1fbe3cdd7a4e991d9075321cb79f81ad992a7e910a11076a9c0ff90",
-    "archimate_list_relationships": "16d5a3430cbcf627cedff452ce242680b96fbd4c785fbe7871b145fbb946d817"
-  }
-}
