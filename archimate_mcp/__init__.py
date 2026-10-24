@@ -4,7 +4,6 @@ import importlib
 import inspect
 from typing import Any
 
-__version__ = "0.2.0"
 __all__: list[str] = []
 
 CORE_MODULES = ["archimate_mcp.api_client"]
@@ -74,3 +73,16 @@ def __getattr__(name: str) -> Any:
 
 def __dir__() -> list[str]:
     return sorted(list(globals().keys()) + __all__)
+
+
+from agent_connector_sdk.connector import Connector
+
+from archimate_mcp.api_client import Api
+from archimate_mcp.auth import get_client
+
+connector = Connector(
+    api=Api,
+    get_client=get_client,
+    tools="archimate_mcp.mcp.mcp_archi",
+    instructions="ArchiMate MCP Server - a self-contained ArchiMate 3.x model engine. Author models (elements, relationships, folders, views), query/traverse them, and import/export the Open Group Model Exchange File Format so models open directly in Archi.",
+)

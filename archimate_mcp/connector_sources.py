@@ -9,9 +9,6 @@ from __future__ import annotations
 from typing import Any
 
 from agent_connector_sdk.ingest.live_declaration import source_meta
-from agent_connector_sdk.ingest.sources import IngestSourceDeclaration, IngestSourceSpec
-
-CONNECTOR: str = "archimate-mcp"
 
 SOURCES: tuple[Any, ...] = (
     source_meta(
@@ -46,509 +43,302 @@ SOURCES: tuple[Any, ...] = (
     ),
 )
 
+SCHEMA_VERSION = 2
+
+FIELD_SETS: dict[str, dict[str, str]] = {
+    "fields_1": {
+        "archimateLayer": "xsd:string",
+        "archimateType": "xsd:string",
+    },
+}
+
 SCHEMA_MAPPINGS: dict[str, Any] = {
     "ApplicationCollaboration": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ApplicationLayerElement",
     },
     "ApplicationEvent": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ApplicationLayerElement",
     },
     "ApplicationFunction": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ApplicationLayerElement",
     },
     "ApplicationInteraction": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ApplicationLayerElement",
     },
     "ApplicationInterface": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ApplicationLayerElement",
     },
     "ApplicationLayerElement": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ArchimateElement",
     },
     "ApplicationProcess": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ApplicationLayerElement",
     },
     "ApplicationService": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ApplicationLayerElement",
     },
     "ArchimateElement": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": None,
     },
     "ArchimateModel": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": None,
     },
     "ArchimateRelationship": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": None,
     },
     "ArchimateView": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": None,
     },
     "Artifact": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "Assessment": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "MotivationElement",
     },
     "BusinessActor": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessLayerElement",
     },
     "BusinessCollaboration": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessLayerElement",
     },
     "BusinessEvent": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessLayerElement",
     },
     "BusinessFunction": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessLayerElement",
     },
     "BusinessInteraction": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessLayerElement",
     },
     "BusinessInterface": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessLayerElement",
     },
     "BusinessLayerElement": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ArchimateElement",
     },
     "BusinessObject": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessLayerElement",
     },
     "BusinessRole": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessLayerElement",
     },
     "BusinessService": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessLayerElement",
     },
     "BusinessTask": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessProcess",
     },
     "Capability": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "StrategyElement",
     },
     "CommunicationNetwork": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "CompositeElement": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ArchimateElement",
     },
     "Constraint": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "MotivationElement",
     },
     "Contract": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessLayerElement",
     },
     "CourseOfAction": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "StrategyElement",
     },
     "DataObject": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ApplicationLayerElement",
     },
     "Deliverable": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ImplementationElement",
     },
     "Device": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "DistributionNetwork": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "PhysicalElement",
     },
     "Driver": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "MotivationElement",
     },
     "Equipment": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "PhysicalElement",
     },
     "Facility": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "PhysicalElement",
     },
     "Gap": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ImplementationElement",
     },
     "Goal": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "MotivationElement",
     },
     "Grouping": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "CompositeElement",
     },
     "ImplementationElement": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ArchimateElement",
     },
     "ImplementationEvent": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ImplementationElement",
     },
     "Junction": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "CompositeElement",
     },
     "Location": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "CompositeElement",
     },
     "Material": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "PhysicalElement",
     },
     "Meaning": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "MotivationElement",
     },
     "MotivationElement": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ArchimateElement",
     },
     "Node": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "Outcome": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "MotivationElement",
     },
     "Path": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "PhysicalElement": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ArchimateElement",
     },
     "Plateau": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ImplementationElement",
     },
     "Principle": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "MotivationElement",
     },
     "Product": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessLayerElement",
     },
     "Representation": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "BusinessLayerElement",
     },
     "Requirement": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "MotivationElement",
     },
     "Resource": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "StrategyElement",
     },
     "Stakeholder": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "MotivationElement",
     },
     "StrategyElement": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ArchimateElement",
     },
     "SystemSoftware": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "TechnologyCollaboration": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "TechnologyEvent": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "TechnologyFunction": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "TechnologyInteraction": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "TechnologyInterface": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "TechnologyLayerElement": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ArchimateElement",
     },
     "TechnologyProcess": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "TechnologyService": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "TechnologyLayerElement",
     },
     "Value": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "MotivationElement",
     },
     "ValueStream": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "StrategyElement",
     },
     "WorkPackage": {
-        "fields": {
-            "archimateLayer": "xsd:string",
-            "archimateType": "xsd:string",
-        },
+        "field_sets": ["fields_1"],
         "ontology_class": "ImplementationElement",
     },
 }
@@ -915,21 +705,3 @@ RESOURCES: tuple[dict[str, str], ...] = (
         "name": "WorkPackage",
     },
 )
-
-
-def declaration() -> IngestSourceDeclaration:
-    """The declaration the server assembles from this module."""
-    specs: list[IngestSourceSpec] = []
-    for item in SOURCES:
-        for entry in item["connector_sources"]:
-            body: dict[str, Any] = {k: v for k, v in entry.items() if k not in ("tool", "mapping")}
-            spec = {**body, "tools": (entry["tool"],)}
-            specs.append(IngestSourceSpec.model_validate(spec))
-    return IngestSourceDeclaration.model_validate(
-        {
-            "connector": CONNECTOR,
-            "sources": specs,
-            "schema_mappings": SCHEMA_MAPPINGS,
-            "resources": RESOURCES,
-        }
-    )

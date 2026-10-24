@@ -7,8 +7,6 @@ HTTP client, since Archi has no remote API.
 
 from archimate_mcp.api.api_client_archi import ArchiApi
 
-__version__ = "0.2.0"
-
 
 class Api(ArchiApi):
     """ArchiMate model engine — full authoring capabilities for agents."""
