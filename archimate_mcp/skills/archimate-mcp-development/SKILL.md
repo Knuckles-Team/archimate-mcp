@@ -122,7 +122,7 @@ runtime.
 
 The central Pipelines renderer owns generated connector Docker and MCP Compose
 files. Generated files are not committed. Before changing deployment metadata,
-render the exact source tree and compare the generated single `archimate-mcp`
+render the exact source tree and compare the generated single `archimate-mcp-mcp`
 service with the SDK entry point, `ARCHI_MODEL_PATH` behavior, loopback/port
 defaults, authentication boundary, and model-state handling. Do not add a state
 volume or replace the existing model semantics without an owning requirement.
