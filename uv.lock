@@ -70,7 +70,7 @@ wheels = [
 
 [[package]]
 name = "archimate-mcp"
-version = "2.6.4"
+version = "2.6.5"
 source = { editable = "." }
 dependencies = [
     { name = "agent-connector-sdk", extra = ["mcp"] },
