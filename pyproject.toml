@@ -9,7 +9,7 @@ description = "ArchiMate model engine + MCP Server for Agentic AI!"
 readme = "README.md"
 classifiers = [ "Development Status :: 4 - Beta", "License :: OSI Approved :: MIT License", "Environment :: Console", "Operating System :: POSIX :: Linux", "Programming Language :: Python :: 3",]
 requires-python = ">=3.12, <3.15"
-dependencies = [ "agent-connector-sdk[mcp]>=0.5.4,<0.6.0", "defusedxml>=0.7.1",]
+dependencies = [ "scion-sdk[mcp]>=0.5.9,<0.6.0", "defusedxml>=0.7.1",]
 [[project.authors]]
 name = "Repository Maintainers"
 email = "maintainers@knuckles.team"
@@ -30,7 +30,7 @@ archimate-mcp = "archimate_mcp.prompts"
 # agent-connector-sdk hub (ArchiMate elements, layers, relationships). Resolved via
 # iter_provider_dirs like the skill/prompt providers.
 
-# The one declared connector identity: the fleet name (SDK-CONNECTOR-CONTROL-R071).
+# The one declared connector identity: the fleet name (SCION-CONNECTOR-CONTROL-R071).
 [project.entry-points."agent_connector_sdk.connector"]
 archimate-mcp = "archimate_mcp:connector"
 
