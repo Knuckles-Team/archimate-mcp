@@ -8,7 +8,7 @@ loading it if it already exists.
 
 import logging
 
-from agent_connector_sdk.config import setting
+from scion_sdk.config import setting
 
 from archimate_mcp.api_client import Api
 

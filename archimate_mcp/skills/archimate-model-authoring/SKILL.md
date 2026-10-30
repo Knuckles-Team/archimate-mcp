@@ -13,7 +13,7 @@ description: >-
 license: MIT
 tags: [archimate, enterprise-architecture, modeling, mcp, open-exchange]
 metadata:
-  author: Genius
+  author: Knuckles-Team
   version: '0.1.0'
 ---
 # ArchiMate Model Authoring

@@ -7,7 +7,7 @@ nodes** — every element becomes an ``:ArchimateElement`` subclass node (``:App
 node **and** a direct LPG edge between its endpoints, and every view an ``:ArchimateView``
 node. The classes match those federated by :mod:`archimate_mcp.ontology`.
 
-Writes go directly through the ``agent_connector_sdk.ingest`` knowledge-ingest facade
+Writes go directly through the ``scion_sdk.ingest`` knowledge-ingest facade
 (the generated EG client), bound to this connector's manifest identity. Node ids follow
 ``archimate:<class>:<extId>`` and structural fields use ``node_type`` / ``relationship``.
 """
@@ -18,7 +18,7 @@ import logging
 import re
 from typing import Any
 
-from agent_connector_sdk.ingest import (
+from scion_sdk.ingest import (
     ChangeSet,
     Document,
     Entity,
@@ -53,9 +53,7 @@ def _to_entity(record: dict[str, Any]) -> Entity:
 
 def _to_relationship(record: dict[str, Any]) -> Relationship:
     props = {
-        k: v
-        for k, v in record.items()
-        if k not in ("source", "target", "relationship")
+        k: v for k, v in record.items() if k not in ("source", "target", "relationship")
     }
     return Relationship(
         source=record["source"],
@@ -187,7 +185,9 @@ def _map_element_record(
 
 def _map_elements(
     elements: list[dict[str, Any]], model_nid: str
-) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], dict[str, str]]:
+) -> tuple[
+    list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], dict[str, str]
+]:
     """Map ArchiMate elements → (entities, edges, documents, id -> KG node id)."""
     entities: list[dict[str, Any]] = []
     edges: list[dict[str, Any]] = []
@@ -267,7 +267,9 @@ def _view_depicts_edges(
         element_ref = node.get("element_ref")
         ref = elem_nid.get(str(element_ref)) if element_ref is not None else None
         if ref:
-            edges.append({"source": vnid, "target": ref, "relationship": "depictsElement"})
+            edges.append(
+                {"source": vnid, "target": ref, "relationship": "depictsElement"}
+            )
     return edges
 
 
@@ -361,9 +363,7 @@ async def ingest_model(
     )
     res = await ingest_entities(entities, edges, ingest=ingest)
     doc_res = (
-        await ingest_documents(documents, ingest=ingest)
-        if documents
-        else {"nodes": 0}
+        await ingest_documents(documents, ingest=ingest) if documents else {"nodes": 0}
     )
     res["documents"] = doc_res["nodes"]
     return res
@@ -382,6 +382,4 @@ async def ingest_from_api(
     relationships = api.list_relationships()
     views = api.list_views()
     model = api.model_summary()
-    return await ingest_model(
-        elements, relationships, views, model, ingest=ingest
-    )
+    return await ingest_model(elements, relationships, views, model, ingest=ingest)
