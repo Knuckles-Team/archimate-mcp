@@ -74,4 +74,3 @@ api = get_client()        # reads ARCHI_MODEL_PATH from the environment / .env
 ## As a CLI
 
 The package installs two console scripts:
-

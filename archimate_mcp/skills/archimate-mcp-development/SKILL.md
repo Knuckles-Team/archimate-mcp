@@ -17,7 +17,7 @@ metadata:
 
 `archimate-mcp` is a connector for a local ArchiMate 3.x model engine. It exposes
 model authoring, querying, Open Group Model Exchange import/export, and optional
-epistemic-graph ingestion through the Agent Connector SDK. Keep model semantics,
+epistemic-graph ingestion through the Scion SDK. Keep model semantics,
 XML handling, MCP tools, ontology assets, and connector source declarations in
 this repository. Admission, transport, and durable graph storage belong to the
 SDK and platform owners.
@@ -43,7 +43,7 @@ SDK and platform owners.
   and development skills. `docs/` is the MkDocs source and `tests/` contains
   startup, publication, model, XML-security, and ingestion checks.
 - `pyproject.toml` declares the single console script
-  `archimate-mcp = agent_connector_sdk.cli:serve` and the SDK connector entry
+  `archimate-mcp = scion_sdk.cli:serve` and the SDK connector entry
   point `archimate-mcp = archimate_mcp:connector`. Do not document an absent
   second console script.
 

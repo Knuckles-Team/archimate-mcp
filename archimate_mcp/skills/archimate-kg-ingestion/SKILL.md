@@ -13,7 +13,7 @@ description: >-
 license: MIT
 tags: [archimate, knowledge-graph, ingestion, owl, mcp]
 metadata:
-  author: Genius
+  author: Knuckles-Team
   version: '0.1.0'
 ---
 # ArchiMate Knowledge-Graph Ingestion
