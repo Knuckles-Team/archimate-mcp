@@ -16,86 +16,73 @@ metadata:
   author: Knuckles-Team
   version: '0.1.0'
 ---
-# ArchiMate Model Authoring
 
-Drive the self-contained ArchiMate 3.x model engine in **archimate-mcp** to author
-models programmatically. The engine round-trips through the Open Group **Model
-Exchange File Format**, so anything you build opens directly in Archi.
+# Archimate Model Authoring
 
-## When to use
-- Stand up a new model, then add elements, relationships, folders, and views.
-- Edit an existing `.archimate` model (rename, re-document, add properties).
-- Produce a shareable Open Exchange file for hand-off to Archi.
+Every step below is one typed tool call; there is no `action` or JSON-string argument. Resolve ids by name first, read before you change, and ask for approval before anything destructive.
 
-## When NOT to use
-- Read-only queries, neighbor traversal, or vocabulary introspection →
-  `archimate-model-analysis`.
-- Mirroring the model into the epistemic-graph knowledge graph →
-  `archimate-kg-ingestion`.
+## Start model
 
-## Prerequisites & environment
-Connect via the `mcp-client` skill against the **`archimate-mcp`** MCP server.
+Start a new model, or load or import an existing one.
 
-| Variable | Required | Notes |
-|----------|----------|-------|
-| `ARCHI_MODEL_PATH` | optional | Path of the model file the engine loads/saves (default `./model.archimate`). Mutations auto-save here. |
-| `MCP_TOOL_MODE` | optional | `condensed` (default) \| `verbose` \| `both`. |
+1. `archimate_new_model` (name, documentation)
+2. `archimate_load` (path)
+3. `archimate_import_open_exchange` (path)
+4. `archimate_model_summary`
 
-There is no remote server or credentials — the model engine is local.
+## Model elements
 
-## Tools & actions
-Prefer the **condensed** tools; each takes `action` + a `params_json` **JSON string**.
+Add, change, find and remove typed ArchiMate elements.
 
-| Tool | Actions |
-|------|---------|
-| `archi_model` | `new`, `load`, `save`, `export_exchange`, `import_exchange`, `summary` |
-| `archi_element` | `add`, `get`, `update`, `delete`, `list`, `find` |
-| `archi_relationship` | `add`, `get`, `update`, `delete`, `list`, `validate` |
-| `archi_folder` | `add`, `move`, `list` |
-| `archi_view` | `create`, `add_element`, `add_connection`, `list`, `get` |
+1. `archimate_element_types`
+2. `archimate_add_element` (type, name, documentation, properties)
+3. `archimate_get_element` (element_id)
+4. `archimate_update_element` (element_id, name, documentation, properties, type)
+5. `archimate_find_elements` (name_substring)
+6. `archimate_list_elements` (type, layer)
+7. `archimate_elements_by_type` (type)
+8. `archimate_delete_element` (element_id, cascade, confirm)
 
-### Key parameters
-- `archi_element add`: `type` (an ArchiMate element type — see
-  `archi_query/element_types`), `name`, `documentation`, `properties`.
-- `archi_relationship add`: `type`, `source` (element id), `target` (element id),
-  optional `validate` (default `true`).
-- `archi_view add_element`: `view_id`, `element_id`, `x`, `y`, `w`, `h`.
+## Relate elements
 
-## Recipes (`params_json`)
-Create a model, then an application component:
-```json
-{"name":"Payments Platform","documentation":"Target-state architecture"}
-```
-```json
-{"type":"ApplicationComponent","name":"Billing Service","documentation":"Issues invoices"}
-```
-Wire a Serving relationship (ids returned by the two `add` calls):
-```json
-{"type":"Serving","source":"elem-<billing>","target":"elem-<portal>"}
-```
-Lay it out on a view:
-```json
-{"name":"Application Cooperation"}
-```
-```json
-{"view_id":"view-<id>","element_id":"elem-<billing>","x":40,"y":40,"w":140,"h":60}
-```
-Export an Open Exchange file for Archi:
-```json
-{"path":"/tmp/payments.archimate"}
-```
+Validate and add relationships between elements, and change or remove them.
 
-## Gotchas
-- `params_json` is a **string** of JSON, not an object — serialize it.
-- Element/relationship `type` must be a known ArchiMate type; unknown types raise.
-  List the vocabulary with `archi_query` `element_types` / `relationship_types`.
-- Relationship `add` validates endpoints by default; pass `"validate": false` to
-  force an unusual pairing. `Association` is always allowed.
-- `add_connection` binds a relationship onto a view only if **both** endpoint
-  elements are already placed on that view — add the element nodes first.
-- Every mutation auto-saves to `ARCHI_MODEL_PATH`; set it before authoring if you
-  want a specific output file.
+1. `archimate_validate_relationship` (type, source_type, target_type)
+2. `archimate_relationship_types`
+3. `archimate_add_relationship` (type, source, target, name, documentation, properties, validate)
+4. `archimate_get_relationship` (relationship_id)
+5. `archimate_update_relationship` (relationship_id, name, documentation, properties)
+6. `archimate_list_relationships` (type, source, target)
+7. `archimate_delete_relationship` (relationship_id, confirm)
 
-## Related
-- **Analyze / traverse** the authored model → `archimate-model-analysis`.
-- **Ingest** the model into the KG as typed nodes → `archimate-kg-ingestion`.
+## Organize folders
+
+Create folders and place elements in them.
+
+1. `archimate_add_folder` (name, type)
+2. `archimate_list_folders`
+3. `archimate_move_to_folder` (folder_id, element_id)
+
+## Draw view
+
+Create a view and place elements and connections on it.
+
+1. `archimate_create_view` (name, documentation)
+2. `archimate_add_element_to_view` (view_id, element_id, x, y, w, h)
+3. `archimate_add_connection_to_view` (view_id, relationship_id)
+4. `archimate_get_view` (view_id)
+5. `archimate_list_views`
+
+## Save and export
+
+Save the model and export an Open Group Model Exchange file Archi opens.
+
+1. `archimate_save` (path)
+2. `archimate_export_open_exchange` (path)
+3. `archimate_model_summary`
+
+## Guardrails
+
+- Never print tokens, passwords or webhook secrets.
+- Public or destructive actions need the requester's confirmation of the target and text.
+- Report ids (and refusal codes) for every call.

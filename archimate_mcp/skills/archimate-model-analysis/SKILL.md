@@ -15,80 +15,46 @@ metadata:
   author: Knuckles-Team
   version: '0.1.0'
 ---
-# ArchiMate Model Analysis
 
-Read-only interrogation of an ArchiMate 3.x model held by the **archimate-mcp**
-engine: filtering, name search, graph traversal, vocabulary introspection, and
-relationship validation.
+# Archimate Model Analysis
 
-## When to use
-- Inventory a model: list elements by `type` or `layer`, find by name substring.
-- Traverse: get an element's `neighbors` or all `relationships_of` it.
-- Audit: check whether a `type` is valid between two element types before authoring.
-- Load an `.archimate` file to inspect, or export the current model.
+Every step below is one typed tool call; there is no `action` or JSON-string argument. Resolve ids by name first, read before you change, and ask for approval before anything destructive.
 
-## When NOT to use
-- Creating/editing elements, relationships, folders, or views →
-  `archimate-model-authoring`.
-- Mirroring the model into the epistemic-graph knowledge graph →
-  `archimate-kg-ingestion`.
+## Inspect model
 
-## Prerequisites & environment
-Connect via the `mcp-client` skill against the **`archimate-mcp`** MCP server.
+Read the loaded model: its size, the ArchiMate vocabulary, folders and views.
 
-| Variable | Required | Notes |
-|----------|----------|-------|
-| `ARCHI_MODEL_PATH` | optional | Model file the engine auto-loads (default `./model.archimate`). |
-| `MCP_TOOL_MODE` | optional | `condensed` (default) \| `verbose` \| `both`. |
+1. `archimate_model_summary`
+2. `archimate_element_types`
+3. `archimate_relationship_types`
+4. `archimate_list_folders`
+5. `archimate_list_views`
 
-## Tools & actions
-Prefer the **condensed** tools; each takes `action` + a `params_json` **JSON string**.
+## Model elements
 
-| Tool | Actions |
-|------|---------|
-| `archi_query` | `neighbors`, `relationships_of`, `by_type`, `element_types`, `relationship_types` |
-| `archi_element` | `list` (filter by `type`/`layer`), `get`, `find` (by `name_substring`) |
-| `archi_relationship` | `list` (filter by `type`/`source`/`target`), `get`, `validate` |
-| `archi_model` | `summary`, `load`, `export_exchange` |
+Add, change, find and remove typed ArchiMate elements.
 
-### Key parameters
-- `archi_query neighbors` / `relationships_of`: `element_id`.
-- `archi_element list`: `type` and/or `layer` (Business, Application, Technology,
-  Strategy, Physical, Motivation, Implementation, Other).
-- `archi_relationship validate`: `type`, `source_type`, `target_type`.
+1. `archimate_element_types`
+2. `archimate_add_element` (type, name, documentation, properties)
+3. `archimate_get_element` (element_id)
+4. `archimate_update_element` (element_id, name, documentation, properties, type)
+5. `archimate_find_elements` (name_substring)
+6. `archimate_list_elements` (type, layer)
+7. `archimate_elements_by_type` (type)
+8. `archimate_delete_element` (element_id, cascade, confirm)
 
-## Recipes (`params_json`)
-List all Application-layer elements:
-```json
-{"layer":"Application"}
-```
-Find an element by name, then walk its neighbors:
-```json
-{"name_substring":"billing"}
-```
-```json
-{"element_id":"elem-<id>"}
-```
-Check a relationship is structurally valid before authoring it:
-```json
-{"type":"Realization","source_type":"ApplicationComponent","target_type":"ApplicationService"}
-```
-Model counts at a glance:
-```json
-{}
-```
+## Analyze dependencies
 
-## Gotchas
-- `params_json` is a **string** of JSON, not an object — serialize it.
-- `layer` values are the eight ArchiMate layers exactly (case-sensitive); an
-  unknown layer simply returns no matches.
-- `neighbors` only returns the far-end **element** of each relationship (with the
-  connecting relationship id/type under `via`); use `relationships_of` for the raw
-  relationship records including dangling ones.
-- `validate` encodes common structural rules and defaults to allowing pairs it does
-  not explicitly constrain (and always allows `Association`) — treat a `true` as
-  "plausible", not "fully ArchiMate-derivation-checked".
+Walk an element's neighbours and relationships to answer impact questions.
 
-## Related
-- **Author / edit** the model → `archimate-model-authoring`.
-- **Ingest** the model into the KG as typed nodes → `archimate-kg-ingestion`.
+1. `archimate_find_elements` (name_substring)
+2. `archimate_get_element` (element_id)
+3. `archimate_neighbors` (element_id)
+4. `archimate_relationships_of` (element_id)
+5. `archimate_list_relationships` (type, source, target)
+
+## Guardrails
+
+- Never print tokens, passwords or webhook secrets.
+- Public or destructive actions need the requester's confirmation of the target and text.
+- Report ids (and refusal codes) for every call.
