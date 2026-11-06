@@ -39,6 +39,10 @@ No unknowns. Each row names the code it touches.
 
 The rows are delivered in place; the design is the caller chain below.
 
+### Exchange document source and import sink (R003, R004)
+
+The engine treats this tool as a federated secondary for the architecture model. `archimate_read_exchange_document` serves the model as one Open Exchange Format document with a content-digest revision, declared as an access contract. `ExchangeImportSink` executes a released change set: it checks the base revision, parses the document with the hardened XML reader and replaces the model file atomically.
+
 ## Phase 2: Task approach
 
 `tasks.md` holds one task line per row, producer first.

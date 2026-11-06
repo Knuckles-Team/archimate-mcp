@@ -25,6 +25,15 @@ The `archimate-mcp` server serves its packaged skills, prompts and ontology to a
 1. **Given** the connector is configured, **When** the behaviour of row `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R001` (default content) is exercised, **Then** `resources/list` includes `skill://` and `ontology://`; `prompts/list` includes each packaged prompt.
 2. **Given** the connector is configured, **When** the behaviour of row `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R002` (declare access contracts for the competency reads of archimate-mcp) is exercised, **Then** declare access contracts for the competency reads of archimate-mcp.
 
+### User Story 2 - The engine syncs this system as a federated secondary (Priority: P2)
+
+The engine reads this system's documents or records through the connector and sends governed changes back.
+
+**Acceptance Scenarios**:
+
+1. **Given** the connector is configured, **When** the behaviour of row `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R003` is exercised, **Then** its rollup test passes.
+2. **Given** the connector is configured, **When** the behaviour of row `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R004` is exercised, **Then** its rollup test passes.
+
 ### Edge Cases
 
 - If `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R001` is not met, its proving test fails: default content.
@@ -34,6 +43,8 @@ The `archimate-mcp` server serves its packaged skills, prompts and ontology to a
 
 - **FR-001**: Default content. Rows: `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R001`.
 - **FR-002**: Declare access contracts for the competency reads of archimate-mcp. Rows: `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R002`.
+- **FR-003**: The model exchange document as a federated pack source. Rows: `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R003`.
+- **FR-004**: Governed import sink for exchange documents. Rows: `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R004`.
 
 ## Success Criteria
 
