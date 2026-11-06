@@ -10,6 +10,7 @@ open directly in Archi.
 
 from __future__ import annotations
 
+import functools
 import os
 from typing import Any
 
@@ -33,6 +34,26 @@ from archimate_mcp.api.archimate_model import (
 # pairs not otherwise constrained, the relationship is allowed.
 
 
+def _mutates(method):
+    """Write the model back to its file after a successful mutation.
+
+    The typed tools each change the in-memory model; without this the change is
+    lost when the server restarts. A model with no writable path never fails the
+    call.
+    """
+
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        result = method(self, *args, **kwargs)
+        try:
+            self.save()
+        except OSError:
+            pass
+        return result
+
+    return wrapper
+
+
 class ArchiApi:
     """A stateful façade over a single ArchiMate model file."""
 
@@ -51,6 +72,7 @@ class ArchiApi:
     # ------------------------------------------------------------------ #
     # Model lifecycle
     # ------------------------------------------------------------------ #
+    @_mutates
     def new_model(self, name: str = "ArchiMate Model", documentation: str = "") -> dict:
         self.model = ArchiMateModel(name=name, documentation=documentation)
         return self.model.summary()
@@ -107,6 +129,7 @@ class ArchiApi:
     # ------------------------------------------------------------------ #
     # Elements
     # ------------------------------------------------------------------ #
+    @_mutates
     def add_element(
         self,
         type: str,
@@ -134,6 +157,7 @@ class ArchiApi:
             raise KeyError(f"No element with id {element_id!r}.")
         return elem.to_dict()
 
+    @_mutates
     def update_element(
         self,
         element_id: str,
@@ -157,6 +181,7 @@ class ArchiApi:
             elem.properties.update(properties)
         return elem.to_dict()
 
+    @_mutates
     def delete_element(self, element_id: str, cascade: bool = True) -> dict:
         if element_id not in self.model.elements:
             raise KeyError(f"No element with id {element_id!r}.")
@@ -241,6 +266,7 @@ class ArchiApi:
             return True
         return True
 
+    @_mutates
     def add_relationship(
         self,
         type: str,
@@ -278,6 +304,7 @@ class ArchiApi:
             raise KeyError(f"No relationship with id {relationship_id!r}.")
         return rel.to_dict()
 
+    @_mutates
     def update_relationship(
         self,
         relationship_id: str,
@@ -296,6 +323,7 @@ class ArchiApi:
             rel.properties.update(properties)
         return rel.to_dict()
 
+    @_mutates
     def delete_relationship(self, relationship_id: str) -> dict:
         if relationship_id not in self.model.relationships:
             raise KeyError(f"No relationship with id {relationship_id!r}.")
@@ -322,11 +350,13 @@ class ArchiApi:
     # ------------------------------------------------------------------ #
     # Folders / organizations
     # ------------------------------------------------------------------ #
+    @_mutates
     def add_folder(self, name: str, type: str = "") -> str:
         folder = Folder(name=name, type=type)
         self.model.folders[folder.id] = folder
         return folder.id
 
+    @_mutates
     def move_to_folder(self, folder_id: str, element_id: str) -> dict:
         folder = self.model.folders.get(folder_id)
         if folder is None:
@@ -351,11 +381,13 @@ class ArchiApi:
     # ------------------------------------------------------------------ #
     # Views (diagrams)
     # ------------------------------------------------------------------ #
+    @_mutates
     def create_view(self, name: str, documentation: str = "") -> str:
         view = View(name=name, documentation=documentation)
         self.model.views[view.id] = view
         return view.id
 
+    @_mutates
     def add_element_to_view(
         self,
         view_id: str,
@@ -374,6 +406,7 @@ class ArchiApi:
         view.nodes.append(node)
         return node.id
 
+    @_mutates
     def add_connection_to_view(self, view_id: str, relationship_id: str) -> str:
         view = self.model.views.get(view_id)
         if view is None:
