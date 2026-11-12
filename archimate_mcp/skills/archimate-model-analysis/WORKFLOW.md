@@ -17,7 +17,7 @@ relationship validation.
 ## When NOT to use
 - Creating/editing elements, relationships, folders, or views →
   `archimate-model-authoring`.
-- Mirroring the model into the epistemic-graph knowledge graph →
+- Mirroring the model into the medulla knowledge graph →
   `archimate-kg-ingestion`.
 
 ## Prerequisites & environment

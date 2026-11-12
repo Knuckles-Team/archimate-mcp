@@ -1,7 +1,7 @@
-"""Native epistemic-graph ingestion for ArchiMate models (typed OWL nodes).
+"""Native medulla ingestion for ArchiMate models (typed OWL nodes).
 
 CONCEPT:AU-KG.ingest.enterprise-source-extractor. The archimate-mcp package natively
-pushes an ArchiMate model into the ONE epistemic-graph knowledge graph as **typed OWL
+pushes an ArchiMate model into the ONE medulla knowledge graph as **typed OWL
 nodes** — every element becomes an ``:ArchimateElement`` subclass node (``:ApplicationComponent``,
 ``:BusinessProcess``, ``:Node``, …), every relationship a reified ``:ArchimateRelationship``
 node **and** a direct LPG edge between its endpoints, and every view an ``:ArchimateView``

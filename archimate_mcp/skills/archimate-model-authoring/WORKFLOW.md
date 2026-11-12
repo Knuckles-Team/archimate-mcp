@@ -16,7 +16,7 @@ Exchange File Format**, so anything you build opens directly in Archi.
 ## When NOT to use
 - Read-only queries, neighbor traversal, or vocabulary introspection →
   `archimate-model-analysis`.
-- Mirroring the model into the epistemic-graph knowledge graph →
+- Mirroring the model into the medulla knowledge graph →
   `archimate-kg-ingestion`.
 
 ## Prerequisites & environment

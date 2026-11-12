@@ -38,7 +38,7 @@
         "validate a relationship pairing"
       ],
       "kg": [
-        "ingest the model into epistemic-graph as :ArchimateModel + :ArchimateElement subclasses (:ApplicationComponent, :BusinessProcess, :Node)",
+        "ingest the model into medulla as :ArchimateModel + :ArchimateElement subclasses (:ApplicationComponent, :BusinessProcess, :Node)",
         "reify relationships as :ArchimateRelationship + direct edges",
         "carry archimateType/archimateLayer provenance"
       ]

@@ -1,7 +1,7 @@
-"""Native epistemic-graph typed-node ingestion — Wire-First coverage.
+"""Native medulla typed-node ingestion — Wire-First coverage.
 
 Exercises the real ``build_model_graph`` mapper + ``ingest_entities`` / ``ingest_model``
-/ ``ingest_from_api`` seams against a fake epistemic-graph ingest transport (no engine
+/ ``ingest_from_api`` seams against a fake medulla ingest transport (no engine
 required), asserting the governed atomic write and the ArchiMate element →
 :ApplicationComponent / relationship → :ArchimateRelationship mapping.
 CONCEPT:AU-KG.ingest.enterprise-source-extractor.
@@ -24,7 +24,7 @@ from archimate_mcp.kg_ingest import (
 
 
 class _FakeTransport:
-    """Stands in for the epistemic-graph ingest transport boundary."""
+    """Stands in for the medulla ingest transport boundary."""
 
     def __init__(self) -> None:
         self.requests: list[Any] = []
