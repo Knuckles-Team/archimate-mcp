@@ -17,7 +17,7 @@ metadata:
 
 `archimate-mcp` is a connector for a local ArchiMate 3.x model engine. It exposes
 model authoring, querying, Open Group Model Exchange import/export, and optional
-epistemic-graph ingestion through the Scion SDK. Keep model semantics,
+medulla ingestion through the Scion SDK. Keep model semantics,
 XML handling, MCP tools, ontology assets, and connector source declarations in
 this repository. Admission, transport, and durable graph storage belong to the
 SDK and platform owners.

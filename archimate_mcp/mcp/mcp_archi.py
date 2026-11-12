@@ -26,7 +26,7 @@ def register_archi_tools(mcp: FastMCP) -> None:
             ),
         ),
     ) -> Any:
-        """Natively ingest the ArchiMate model into epistemic-graph as typed nodes.
+        """Natively ingest the ArchiMate model into medulla as typed nodes.
 
         Lists the model's elements, relationships and views via the model engine and
         pushes them into the knowledge graph as ``:ArchimateElement`` subclass nodes

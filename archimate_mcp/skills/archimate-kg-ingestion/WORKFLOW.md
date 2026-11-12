@@ -1,10 +1,10 @@
 # Archimate Kg Ingestion
 
-Natively mirror an ArchiMate 3.x model into the epistemic-graph knowledge graph via the archimate-mcp MCP server — every element becomes a typed OWL node (:ArchimateElement subclass such as :ApplicationComponent / :BusinessProcess / :Node), every relationship a reified :ArchimateRelationship node plus a direct edge, and every view an :ArchimateView node, all under one :ArchimateModel. Use when the agent must make an architecture model queryable in the KG alongside the rest of the enterprise. Do NOT use to create/edit the model (use archimate-model-authoring) or to read it locally (use archimate-model-analysis).
+Natively mirror an ArchiMate 3.x model into the medulla knowledge graph via the archimate-mcp MCP server — every element becomes a typed OWL node (:ArchimateElement subclass such as :ApplicationComponent / :BusinessProcess / :Node), every relationship a reified :ArchimateRelationship node plus a direct edge, and every view an :ArchimateView node, all under one :ArchimateModel. Use when the agent must make an architecture model queryable in the KG alongside the rest of the enterprise. Do NOT use to create/edit the model (use archimate-model-authoring) or to read it locally (use archimate-model-analysis).
 
 # ArchiMate Knowledge-Graph Ingestion
 
-Push an ArchiMate model into the ONE epistemic-graph knowledge graph as **typed OWL
+Push an ArchiMate model into the ONE medulla knowledge graph as **typed OWL
 nodes + edges**, so architecture facts join the rest of the enterprise graph and
 resolve through the shared `[configured-endpoint]` ontology.
 
@@ -20,7 +20,7 @@ resolve through the shared `[configured-endpoint]` ontology.
 
 ## Prerequisites & environment
 Connect via the `mcp-client` skill against the **`archimate-mcp`** MCP server, with a
-reachable epistemic-graph engine (arbora). Ingestion is authoritative: engine,
+reachable medulla engine (arbora). Ingestion is authoritative: engine,
 validation, and transaction failures are surfaced explicitly.
 
 | Variable | Required | Notes |

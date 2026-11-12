@@ -107,7 +107,7 @@ class ArchiApi:
     # Native knowledge-graph ingestion (default-on, authoritative)
     # ------------------------------------------------------------------ #
     async def ingest_to_kg(self) -> dict | None:
-        """Push the current model into epistemic-graph as typed OWL nodes.
+        """Push the current model into medulla as typed OWL nodes.
 
         Ingestion failures propagate to the caller.
         CONCEPT:AU-KG.ingest.enterprise-source-extractor.

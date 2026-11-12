@@ -1,16 +1,18 @@
 @prefix fibo-fi: <https://spec.edmcouncil.org/fibo/ontology/FBC/FinancialInstruments/FinancialInstruments/> .
+@prefix core: <https://knuckles-team.github.io/ontology/core#> .
 @prefix fibo-org: <https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/> .
 @prefix bibo: <http://purl.org/ontology/bibo/> .
 @prefix time: <http://www.w3.org/2006/time#> .
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix dc: <http://purl.org/dc/terms/> .
-@prefix : <http://knuckles.team/kg#> .
+@prefix : <https://knuckles-team.github.io/ontology/connector/archimate#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-:BusinessTask a owl:Class .
+:BusinessTask a owl:Class ;
+    rdfs:subClassOf core:BusinessTask .
 
 
 :Change rdfs:subClassOf :BusinessProcess .
@@ -38,7 +40,7 @@
     reasoning misclassify lineage assets as business tasks.""" ;
     rdfs:seeAlso <https://www.omg.org/spec/BPMN/20100524/MODEL> .
 
-<http://knuckles.team/kg/archimate> a owl:Ontology ;
+<https://knuckles-team.github.io/ontology/connector/archimate> a owl:Ontology ;
     rdfs:label "ArchiMate Canonical Upper Ontology & Vendor Crosswalk" ;
     rdfs:comment """Vendor-neutral ArchiMate 3.2 anchor concepts plus the
     cross-vendor crosswalk that makes enterprise systems interchangeable at the
@@ -49,7 +51,7 @@
     client runs. Reasoning (owlready2/HermiT via core/owl_bridge.py) propagates
     rdf:type along these axioms onto the canonical concepts.
 
-    All classes share the single namespace http://knuckles.team/kg# — this file
+    All classes share the single namespace https://knuckles-team.github.io/ontology/core# — this file
     only DEFINES classes not declared elsewhere (:ApplicationEvent, :BusinessTask,
     :BusinessActor) and ADDS crosswalk axioms onto classes defined in sibling
     ontologies (:Incident/:Change in ontology_servicenow.ttl;
@@ -63,10 +65,12 @@
 :ErpNextIssue rdfs:subClassOf :ApplicationEvent .
 
 :ApplicationEvent a owl:Class ;
+    rdfs:subClassOf core:ApplicationEvent ;
     rdfs:seeAlso <https://pubs.opengroup.org/architecture/archimate3-doc/chap09.html> .
 
 
 :BusinessActor a owl:Class ;
+    rdfs:subClassOf core:BusinessActor ;
     rdfs:seeAlso <https://pubs.opengroup.org/architecture/archimate3-doc/chap08.html> .
 
 
@@ -90,10 +94,12 @@
     rdfs:seeAlso <https://pubs.opengroup.org/architecture/archimate3-doc/> .
 
 :ArchimateModel a owl:Class ;
+    rdfs:subClassOf core:Model ;
     rdfs:label "ArchiMate Model" ;
     rdfs:comment "A whole ArchiMate model (an Open Exchange file) that owns elements, relationships and views." .
 
 :ArchimateRelationship a owl:Class ;
+    rdfs:subClassOf core:ArchimateRelationship ;
     rdfs:label "ArchiMate Relationship" ;
     rdfs:comment """A reified ArchiMate relationship (Serving, Realization,
     Assignment, Composition, ...) captured as a node so its type, name and
@@ -101,6 +107,7 @@
     endpoint elements.""" .
 
 :ArchimateView a owl:Class ;
+    rdfs:subClassOf core:Artifact ;
     rdfs:label "ArchiMate View" ;
     rdfs:comment "A view (diagram) of an ArchiMate model referencing a subset of its elements and relationships." .
 
@@ -116,7 +123,8 @@
 
 
 # --- Strategy layer element types ---
-:Resource a owl:Class .
+:Resource a owl:Class ;
+    rdfs:subClassOf core:Resource .
 
 :Capability a owl:Class ;
     rdfs:label "Capability" ;
@@ -152,7 +160,8 @@
 :BusinessService a owl:Class ;
     rdfs:label "Business Service" ;
     rdfs:subClassOf :BusinessLayerElement .
-:BusinessObject a owl:Class .
+:BusinessObject a owl:Class ;
+    rdfs:subClassOf core:BusinessObject .
 
 :Contract a owl:Class ;
     rdfs:label "Contract" ;
@@ -225,7 +234,8 @@
 :TechnologyService a owl:Class ;
     rdfs:label "Technology Service" ;
     rdfs:subClassOf :TechnologyLayerElement .
-:Artifact a owl:Class .
+:Artifact a owl:Class ;
+    rdfs:subClassOf core:Artifact .
 
 
 # --- Physical layer element types ---
@@ -249,16 +259,20 @@
 :Driver a owl:Class ;
     rdfs:label "Driver" ;
     rdfs:subClassOf :MotivationElement .
-:Assessment a owl:Class .
+:Assessment a owl:Class ;
+    rdfs:subClassOf core:Assessment .
 
-:Goal a owl:Class .
+:Goal a owl:Class ;
+    rdfs:subClassOf core:Goal .
 
 :Outcome a owl:Class ;
     rdfs:label "Outcome" ;
     rdfs:subClassOf :MotivationElement .
-:Principle a owl:Class .
+:Principle a owl:Class ;
+    rdfs:subClassOf core:Principle .
 
-:Requirement a owl:Class .
+:Requirement a owl:Class ;
+    rdfs:subClassOf core:Requirement .
 
 :Constraint a owl:Class ;
     rdfs:label "Constraint" ;
@@ -398,6 +412,6 @@
     rdfs:range :ArchimateElement .
 
 # ontology-codemod R3
-<http://knuckles.team/kg#ArchimateElement> rdfs:subClassOf <http://knuckles.team/kg#ArchiMateElement> .
-<http://knuckles.team/kg#Device> rdfs:subClassOf <http://knuckles.team/kg/infrastructure#Device> .
-<http://knuckles.team/kg#Node> rdfs:subClassOf <http://knuckles.team/kg/infrastructure#Node> .
+<https://knuckles-team.github.io/ontology/connector/archimate#ArchimateElement> rdfs:subClassOf <https://knuckles-team.github.io/ontology/core#ArchiMateElement> .
+<https://knuckles-team.github.io/ontology/connector/archimate#Device> rdfs:subClassOf <https://knuckles-team.github.io/ontology/infrastructure#Device> .
+<https://knuckles-team.github.io/ontology/connector/archimate#Node> rdfs:subClassOf <https://knuckles-team.github.io/ontology/infrastructure#Node> .

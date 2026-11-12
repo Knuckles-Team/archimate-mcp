@@ -34,7 +34,7 @@ Pick the extra that matches what the operator want to run:
 
 | Extra | Installs | Use when |
 |-------|----------|----------|
-| `archimate-mcp[mcp]` | Connector-focused MCP server (`scion-sdk` — FastMCP/FastAPI + `epistemic-graph[full]`) | The operator only run the **MCP server** (smallest install / image) |
+| `archimate-mcp[mcp]` | Connector-focused MCP server (`scion-sdk` — FastMCP/FastAPI + `medulla[full]`) | The operator only run the **MCP server** (smallest install / image) |
 | `archimate-mcp[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
 
 ```bash
@@ -53,7 +53,7 @@ One multi-stage `docker/Dockerfile` builds the MCP-only image (`--target mcp`):
 
 | Image tag | Build target | Contents | Entrypoint |
 |-----------|--------------|----------|------------|
-| `example/archimate-mcp:mcp` | `--target mcp` | `archimate-mcp[mcp]` — **connector-focused**, includes `epistemic-graph[full]`; no model-orchestration stack | `archimate-mcp` |
+| `example/archimate-mcp:mcp` | `--target mcp` | `archimate-mcp[mcp]` — **connector-focused**, includes `medulla[full]`; no model-orchestration stack | `archimate-mcp` |
 
 ```bash
 docker build --target mcp   -t example/archimate-mcp:mcp    docker/   # connector-focused MCP server
@@ -61,14 +61,14 @@ docker build --target mcp   -t example/archimate-mcp:mcp    docker/   # connecto
 
 agent (`immutable agent digest`) with a co-located `:mcp` sidecar.
 
-### Knowledge-graph database (`epistemic-graph`)
+### Knowledge-graph database (`medulla`)
 
-Scion SDK core dependency (`epistemic-graph[full]`). The `[mcp]` extra keeps
+Scion SDK core dependency (`medulla[full]`). The `[mcp]` extra keeps
 deployments can use the bundled engine. For production or shared state, run
-**epistemic-graph as a dedicated database service** and configure the runtime to use it.
+**medulla as a dedicated database service** and configure the runtime to use it.
 Deployment recipes (single-node + Raft HA), connection configuration, and architecture
 diagrams are documented in the
-[epistemic-graph deployment guide](https://knuckles-team.github.io/epistemic-graph/deployment/).
+[medulla deployment guide](https://knuckles-team.github.io/medulla/deployment/).
 
 ## Usage
 Run the MCP server directly:
@@ -86,7 +86,7 @@ archimate-agent
 
 > **Install the connector-focused `[mcp]` extra.** Examples use `archimate-mcp[mcp]` to add
 > FastMCP / FastAPI through `scion-sdk`; the required Scion SDK core
-> still carries `epistemic-graph[full]`. The `[agent-runtime]` extra additionally
+> still carries `medulla[full]`. The `[agent-runtime]` extra additionally
 > enables model orchestration.
 
 #### stdio Transport (local IDEs — Cursor, Claude Desktop, VS Code)
@@ -305,7 +305,7 @@ The table below is auto-generated from the live server — do not edit by hand.
 | `archi_query` | intent | Traverse and introspect the model and its vocabulary. |
 | `archi_relationship` | intent | Create, read, update, delete, list, or validate relationships. |
 | `archi_view` | intent | Create views (diagrams) and place elements/connections on them. |
-| `archimate_ingest_model` | intent | Natively ingest the ArchiMate model into epistemic-graph as typed nodes. |
+| `archimate_ingest_model` | intent | Natively ingest the ArchiMate model into medulla as typed nodes. |
 
 _7 intent tool(s) · 0 operation(s). Call an operation as `act(action='<operation>', params={...})` (`ask` for reads); `find(action='describe', params={'action': '<operation>'})` returns its arguments. An operation is enabled unless its `<DOMAIN>TOOL` toggle is set false. Auto-generated — do not edit._
 <!-- MCP-TOOLS-TABLE:END -->
