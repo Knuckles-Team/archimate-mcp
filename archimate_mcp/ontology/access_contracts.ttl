@@ -1,0 +1,38 @@
+@prefix ac: <https://knuckles-team.github.io/ontology/access#> .
+@prefix core: <https://knuckles-team.github.io/ontology/core#> .
+@prefix archimate: <https://knuckles-team.github.io/ontology/connector/archimate#> .
+@prefix archac: <https://knuckles-team.github.io/ontology/connector/archimate-access#> .
+
+# Read contracts for the competency reads of the ArchiMate connector: the
+# elements and the relationships of the loaded model. Each names the existing
+# read tool that serves it; no new tool is introduced.
+
+archac:elementAccess a ac:AccessContract ;
+    ac:classIri archimate:ArchimateElement ;
+    ac:sourceId "archimate-mcp" ;
+    ac:entity "element" ;
+    ac:keyField "id" ;
+    ac:accessKind "mcp_tool" ;
+    ac:operation "archimate_list_elements" ;
+    ac:pagination "none" .
+
+archac:elementName a ac:PropertyBinding ;
+    ac:contract archac:elementAccess ; ac:property core:name ; ac:field "name" .
+archac:elementType a ac:PropertyBinding ;
+    ac:contract archac:elementAccess ; ac:property archimate:elementType ; ac:field "type" .
+
+archac:relationshipAccess a ac:AccessContract ;
+    ac:classIri archimate:ArchimateRelationship ;
+    ac:sourceId "archimate-mcp" ;
+    ac:entity "relationship" ;
+    ac:keyField "id" ;
+    ac:accessKind "mcp_tool" ;
+    ac:operation "archimate_list_relationships" ;
+    ac:pagination "none" .
+
+archac:relationshipSourceId a ac:PropertyBinding ;
+    ac:contract archac:relationshipAccess ; ac:property archimate:sourceId ; ac:field "source" .
+archac:relationshipTargetId a ac:PropertyBinding ;
+    ac:contract archac:relationshipAccess ; ac:property archimate:targetId ; ac:field "target" .
+archac:relationshipType a ac:PropertyBinding ;
+    ac:contract archac:relationshipAccess ; ac:property archimate:relationshipType ; ac:field "type" .
