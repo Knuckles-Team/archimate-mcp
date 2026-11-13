@@ -348,6 +348,31 @@
     rdfs:comment "The ArchiMate 3.x concept type name of an element or relationship (e.g. 'ApplicationComponent', 'Serving')." ;
     rdfs:range xsd:string .
 
+# Columns of the competency reads declared in access_contracts.ttl.
+:elementType a owl:DatatypeProperty ;
+    rdfs:label "element type" ;
+    rdfs:comment "The ArchiMate concept type name of an element, as returned by archimate_list_elements." ;
+    rdfs:domain :ArchimateElement ;
+    rdfs:range xsd:string .
+
+:relationshipType a owl:DatatypeProperty ;
+    rdfs:label "relationship type" ;
+    rdfs:comment "The ArchiMate relationship type name, as returned by archimate_list_relationships." ;
+    rdfs:domain :ArchimateRelationship ;
+    rdfs:range xsd:string .
+
+:sourceId a owl:DatatypeProperty ;
+    rdfs:label "source id" ;
+    rdfs:comment "Id of the element a relationship starts at." ;
+    rdfs:domain :ArchimateRelationship ;
+    rdfs:range xsd:string .
+
+:targetId a owl:DatatypeProperty ;
+    rdfs:label "target id" ;
+    rdfs:comment "Id of the element a relationship points to." ;
+    rdfs:domain :ArchimateRelationship ;
+    rdfs:range xsd:string .
+
 :archimateLayer a owl:DatatypeProperty ;
     rdfs:label "archimate layer" ;
     rdfs:comment "The ArchiMate layer of an element (Business, Application, Technology, ...)." ;

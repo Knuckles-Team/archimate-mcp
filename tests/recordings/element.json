@@ -1,0 +1,18 @@
+[
+  {
+    "id": "elem-f8c5fd0bb02644d48dd05a8bf3c20695",
+    "type": "ApplicationComponent",
+    "name": "CRM",
+    "documentation": "",
+    "properties": {},
+    "layer": "Application"
+  },
+  {
+    "id": "elem-ac049d83e39841599612beee6654e363",
+    "type": "Node",
+    "name": "Database host",
+    "documentation": "",
+    "properties": {},
+    "layer": "Technology"
+  }
+]

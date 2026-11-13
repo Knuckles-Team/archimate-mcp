@@ -1,0 +1,11 @@
+[
+  {
+    "id": "rel-f9ed4f891c184b7fad3c8a7109dabc49",
+    "type": "Serving",
+    "source": "elem-ac049d83e39841599612beee6654e363",
+    "target": "elem-f8c5fd0bb02644d48dd05a8bf3c20695",
+    "name": "",
+    "documentation": "",
+    "properties": {}
+  }
+]
