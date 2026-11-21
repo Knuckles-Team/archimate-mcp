@@ -21,6 +21,7 @@ CONTRACTS = parse_access_contracts(
 ONTOLOGY = (
     resources.files("archimate_mcp").joinpath("ontology", "archimate.ttl").read_text()
 )
+CORE_NS = "https://knuckles-team.github.io/ontology/core#"
 CONNECTOR_NS = "https://knuckles-team.github.io/ontology/connector/archimate#"
 
 
@@ -55,9 +56,12 @@ def test_competency_contracts_certified(tmp_path, monkeypatch):
         assert contract.access_kind == "mcp_tool"
         assert contract.pagination == "none"
         assert contract.key_field == "id"
-        assert contract.class_iri.startswith(CONNECTOR_NS)
-        local = contract.class_iri.removeprefix(CONNECTOR_NS)
-        assert f"\n:{local} a owl:Class" in ONTOLOGY
+        if contract.class_iri.startswith(CONNECTOR_NS):
+            local = contract.class_iri.removeprefix(CONNECTOR_NS)
+            assert f"\n:{local} a owl:Class" in ONTOLOGY
+        else:
+            # A core class: referenced by its core IRI, never declared by the pack.
+            assert contract.class_iri.startswith(CORE_NS)
         for prop, _field in contract.predicates:
             if prop.startswith(CONNECTOR_NS):
                 name = prop.removeprefix(CONNECTOR_NS)

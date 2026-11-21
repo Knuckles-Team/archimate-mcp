@@ -15,3 +15,4 @@ Each task line reads `- [ ] T001 [P] [US1] <ID>-R012.4 description`. Order is pr
 - [ ] T009 [US2] CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R004.1 Exchange import sink.
 - [ ] T010 [US2] CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R004.2 Exchange import refusal and evidence.
 - [ ] T011 [US2] CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R004.3 Register the import sink and prove the path.
+- [x] T012 [US1] CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R005 Pack extends only the core ontology.

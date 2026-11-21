@@ -8,7 +8,7 @@
 # read tool that serves it; no new tool is introduced.
 
 archac:elementAccess a ac:AccessContract ;
-    ac:classIri archimate:ArchimateElement ;
+    ac:classIri core:ArchiMateElement ;
     ac:sourceId "archimate-mcp" ;
     ac:entity "element" ;
     ac:keyField "id" ;
@@ -22,7 +22,7 @@ archac:elementType a ac:PropertyBinding ;
     ac:contract archac:elementAccess ; ac:property archimate:elementType ; ac:field "type" .
 
 archac:relationshipAccess a ac:AccessContract ;
-    ac:classIri archimate:ArchimateRelationship ;
+    ac:classIri core:ArchimateRelationship ;
     ac:sourceId "archimate-mcp" ;
     ac:entity "relationship" ;
     ac:keyField "id" ;
@@ -34,5 +34,3 @@ archac:relationshipSourceId a ac:PropertyBinding ;
     ac:contract archac:relationshipAccess ; ac:property archimate:sourceId ; ac:field "source" .
 archac:relationshipTargetId a ac:PropertyBinding ;
     ac:contract archac:relationshipAccess ; ac:property archimate:targetId ; ac:field "target" .
-archac:relationshipType a ac:PropertyBinding ;
-    ac:contract archac:relationshipAccess ; ac:property archimate:relationshipType ; ac:field "type" .
