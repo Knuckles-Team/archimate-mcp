@@ -33,11 +33,13 @@ The engine reads this system's documents or records through the connector and se
 
 1. **Given** the connector is configured, **When** the behaviour of row `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R003` is exercised, **Then** its rollup test passes.
 2. **Given** the connector is configured, **When** the behaviour of row `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R004` is exercised, **Then** its rollup test passes.
+5. **Given** the connector is configured, **When** the behaviour of row `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R005` (pack extends only the core ontology) is exercised, **Then** no core class or property is redeclared and no retired IRI base remains. Test: `tests/test_pack_extends_core.py::test_pack_declares_no_core_term`.
 
 ### Edge Cases
 
 - If `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R001` is not met, its proving test fails: default content.
 - If `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R002` is not met, its proving test fails: declare access contracts for the competency reads of archimate-mcp.
+- If `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R005` is not met, its proving test fails: pack extends only the core ontology.
 
 ## Requirements
 
@@ -45,11 +47,13 @@ The engine reads this system's documents or records through the connector and se
 - **FR-002**: Declare access contracts for the competency reads of archimate-mcp. Rows: `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R002`.
 - **FR-003**: The model exchange document as a federated pack source. Rows: `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R003`.
 - **FR-004**: Governed import sink for exchange documents. Rows: `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R004`.
+- **FR-005**: Pack extends only the core ontology. Rows: `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R005`.
 
 ## Success Criteria
 
 - **SC-001**: `resources/list` includes `skill://` and `ontology://`; `prompts/list` includes each packaged prompt. Rows: `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R001`.
 - **SC-002**: Declare access contracts for the competency reads of archimate-mcp. Rows: `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R002`.
+- **SC-005**: No pack term redeclares a core term and no retired IRI base remains. Rows: `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R005`.
 
 ## Assumptions
 
@@ -62,3 +66,4 @@ The engine reads this system's documents or records through the connector and se
 |---|---|---|---|---|
 | FR-001 | `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R001` | [plan.md](plan.md) | T-001 | [test-spec.md](test-spec.md) |
 | FR-002 | `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R002` | [plan.md](plan.md) | T-002 | [test-spec.md](test-spec.md) |
+| FR-005 | `CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R005` | [plan.md](plan.md) | T-002 | [test-spec.md](test-spec.md) |
