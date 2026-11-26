@@ -1,4 +1,32 @@
-# archimate-mcp
+# Archimate Mcp
+## MCP
+
+![PyPI - Version](https://img.shields.io/pypi/v/archimate-mcp)
+![MCP Server](https://badge.mcpx.dev?type=server 'MCP Server')
+![PyPI - Downloads](https://img.shields.io/pypi/dd/archimate-mcp)
+![GitHub Repo stars](https://img.shields.io/github/stars/Knuckles-Team/archimate-mcp)
+![GitHub forks](https://img.shields.io/github/forks/Knuckles-Team/archimate-mcp)
+![GitHub contributors](https://img.shields.io/github/contributors/Knuckles-Team/archimate-mcp)
+![PyPI - License](https://img.shields.io/pypi/l/archimate-mcp)
+![GitHub](https://img.shields.io/github/license/Knuckles-Team/archimate-mcp)
+![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/Knuckles-Team/archimate-mcp)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/Knuckles-Team/archimate-mcp)
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/Knuckles-Team/archimate-mcp)
+![GitHub issues](https://img.shields.io/github/issues/Knuckles-Team/archimate-mcp)
+![GitHub top language](https://img.shields.io/github/languages/top/Knuckles-Team/archimate-mcp)
+![GitHub language count](https://img.shields.io/github/languages/count/Knuckles-Team/archimate-mcp)
+![GitHub repo size](https://img.shields.io/github/repo-size/Knuckles-Team/archimate-mcp)
+![GitHub repo file count (file type)](https://img.shields.io/github/directory-file-count/Knuckles-Team/archimate-mcp)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/archimate-mcp)
+![PyPI - Implementation](https://img.shields.io/pypi/implementation/archimate-mcp)
+
+> **Documentation** — Installation, deployment, and usage across the API, CLI, MCP,
+> and A2A agent interfaces are maintained in the
+> [official documentation](https://knuckles-team.github.io/archimate-mcp/).
+
+---
+
+## Overview
 
 A self-contained **ArchiMate model engine** exposed as a Model Context
 authoring capabilities — create/load/save models, full CRUD on elements,
@@ -8,79 +36,17 @@ directly in [Archi](https://www.archimatetool.com/).
 
 Archi has no native server API, so `archimate-mcp` ships its own dependency-light
 engine built on the Python standard library (`xml.etree.ElementTree`).
-
-> **Documentation** — Installation, deployment, usage across the API, CLI, and MCP
-> [official documentation](https://knuckles-team.github.io/archimate-mcp/).
-
-## Table of Contents
-- [Overview](#overview)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Architecture](#architecture)
-- [Deployment](#deployment)
-- [Environment Variables](#environment-variables)
-- [MCP Tools](#mcp-tools)
-
-## Overview
 `archimate-mcp` exposes a standardized interface for authoring ArchiMate models via
 the Model Context Protocol. The full ArchiMate vocabulary (Strategy, Business,
 Application, Technology, Physical, Motivation, Implementation layers) and all
 relationship types are supported, with structural validation and round-trip
 Open Exchange Format serialization.
 
-## Installation
+---
 
-Pick the extra that matches what the operator want to run:
+## MCP
 
-| Extra | Installs | Use when |
-|-------|----------|----------|
-| `archimate-mcp[mcp]` | Connector-focused MCP server (`scion-sdk` — FastMCP/FastAPI + `medulla[full]`) | The operator only run the **MCP server** (smallest install / image) |
-| `archimate-mcp[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
-
-```bash
-# Connector-focused MCP server (includes the shared graph engine)
-uv pip install "archimate-mcp[mcp]"
-
-# Agent runtime (adds model orchestration to the shared graph engine)
-
-# Everything (development)
-uv pip install "archimate-mcp[all]"      # or: python -m pip install "archimate-mcp[all]"
-```
-
-### Container images (`:mcp`)
-
-One multi-stage `docker/Dockerfile` builds the MCP-only image (`--target mcp`):
-
-| Image tag | Build target | Contents | Entrypoint |
-|-----------|--------------|----------|------------|
-| `example/archimate-mcp:mcp` | `--target mcp` | `archimate-mcp[mcp]` — **connector-focused**, includes `medulla[full]`; no model-orchestration stack | `archimate-mcp` |
-
-```bash
-docker build --target mcp   -t example/archimate-mcp:mcp    docker/   # connector-focused MCP server
-```
-
-agent (`immutable agent digest`) with a co-located `:mcp` sidecar.
-
-### Knowledge-graph database (`medulla`)
-
-Scion SDK core dependency (`medulla[full]`). The `[mcp]` extra keeps
-deployments can use the bundled engine. For production or shared state, run
-**medulla as a dedicated database service** and configure the runtime to use it.
-Deployment recipes (single-node + Raft HA), connection configuration, and architecture
-diagrams are documented in the
-[medulla deployment guide](https://knuckles-team.github.io/medulla/deployment/).
-
-## Usage
-Run the MCP server directly:
-```bash
-archimate-mcp
-```
-
-```bash
-archimate-agent
-```
-
-## MCP Configuration Examples
+### MCP Configuration Examples
 
 <!-- MCP-CONFIG-EXAMPLES:START -->
 
@@ -181,10 +147,35 @@ does not emit an unauthenticated non-loopback listener.
 _Auto-generated from the code-read env surface (package vars) — do not edit._
 <!-- MCP-CONFIG-EXAMPLES:END -->
 
+### MCP Tools
+
+The table below is auto-generated from the live server — do not edit by hand.
+
+<!-- MCP-TOOLS-TABLE:START -->
+
+#### Intent tools
+
+| MCP Tool | Kind | Description |
+|----------|------|-------------|
+| `archi_element` | intent | Create, read, update, delete, list, or search elements. |
+| `archi_folder` | intent | Manage organizations (folders) and place items in them. |
+| `archi_model` | intent | Manage the model lifecycle and Open Exchange import/export. |
+| `archi_query` | intent | Traverse and introspect the model and its vocabulary. |
+| `archi_relationship` | intent | Create, read, update, delete, list, or validate relationships. |
+| `archi_view` | intent | Create views (diagrams) and place elements/connections on them. |
+| `archimate_ingest_model` | intent | Natively ingest the ArchiMate model into medulla as typed nodes. |
+
+_7 intent tool(s) · 0 operation(s). Call an operation as `act(action='<operation>', params={...})` (`ask` for reads); `find(action='describe', params={'action': '<operation>'})` returns its arguments. An operation is enabled unless its `<DOMAIN>TOOL` toggle is set false. Auto-generated — do not edit._
+<!-- MCP-TOOLS-TABLE:END -->
+
+---
+
 ## Architecture
 See `/docs` for architectural diagrams and further documentation. The model
 engine lives in `archimate_mcp/api/` (`archimate_model.py`, `api_client_archi.py`),
 the MCP tools in `archimate_mcp/mcp/mcp_archi.py`.
+
+---
 
 ## Deployment
 ### Bare-metal
@@ -211,6 +202,8 @@ the detailed transport contract.
   ingress. Keep its URL, outbound identity references, trust profile, and exact
   `MCP_ALLOWED_HOSTS` in `AgentConfig`.
 <!-- END GENERATED: additional-deployment-options -->
+
+---
 
 ## Environment Variables
 
@@ -289,26 +282,63 @@ The toggle is in the [MCP Tools](#mcp-tools) table below (`ARCHITOOL`).
 | `EUNOMIA_POLICY_FILE` | Embedded policy file | `mcp_policies.json` |
 | `EUNOMIA_REMOTE_URL` | Remote Eunomia server URL | — |
 
-## MCP Tools
+---
 
-The table below is auto-generated from the live server — do not edit by hand.
+## Installation
 
-<!-- MCP-TOOLS-TABLE:START -->
+Pick the extra that matches what the operator want to run:
 
-#### Intent tools
+| Extra | Installs | Use when |
+|-------|----------|----------|
+| `archimate-mcp[mcp]` | Connector-focused MCP server (`scion-sdk` — FastMCP/FastAPI + `medulla[full]`) | The operator only run the **MCP server** (smallest install / image) |
+| `archimate-mcp[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
 
-| MCP Tool | Kind | Description |
-|----------|------|-------------|
-| `archi_element` | intent | Create, read, update, delete, list, or search elements. |
-| `archi_folder` | intent | Manage organizations (folders) and place items in them. |
-| `archi_model` | intent | Manage the model lifecycle and Open Exchange import/export. |
-| `archi_query` | intent | Traverse and introspect the model and its vocabulary. |
-| `archi_relationship` | intent | Create, read, update, delete, list, or validate relationships. |
-| `archi_view` | intent | Create views (diagrams) and place elements/connections on them. |
-| `archimate_ingest_model` | intent | Natively ingest the ArchiMate model into medulla as typed nodes. |
+```bash
+# Connector-focused MCP server (includes the shared graph engine)
+uv pip install "archimate-mcp[mcp]"
 
-_7 intent tool(s) · 0 operation(s). Call an operation as `act(action='<operation>', params={...})` (`ask` for reads); `find(action='describe', params={'action': '<operation>'})` returns its arguments. An operation is enabled unless its `<DOMAIN>TOOL` toggle is set false. Auto-generated — do not edit._
-<!-- MCP-TOOLS-TABLE:END -->
+# Agent runtime (adds model orchestration to the shared graph engine)
+
+# Everything (development)
+uv pip install "archimate-mcp[all]"      # or: python -m pip install "archimate-mcp[all]"
+```
+
+### Container images (`:mcp`)
+
+One multi-stage `docker/Dockerfile` builds the MCP-only image (`--target mcp`):
+
+| Image tag | Build target | Contents | Entrypoint |
+|-----------|--------------|----------|------------|
+| `example/archimate-mcp:mcp` | `--target mcp` | `archimate-mcp[mcp]` — **connector-focused**, includes `medulla[full]`; no model-orchestration stack | `archimate-mcp` |
+
+```bash
+docker build --target mcp   -t example/archimate-mcp:mcp    docker/   # connector-focused MCP server
+```
+
+agent (`immutable agent digest`) with a co-located `:mcp` sidecar.
+
+### Knowledge-graph database (`medulla`)
+
+Scion SDK core dependency (`medulla[full]`). The `[mcp]` extra keeps
+deployments can use the bundled engine. For production or shared state, run
+**medulla as a dedicated database service** and configure the runtime to use it.
+Deployment recipes (single-node + Raft HA), connection configuration, and architecture
+diagrams are documented in the
+[medulla deployment guide](https://knuckles-team.github.io/medulla/deployment/).
+
+---
+
+## Usage
+Run the MCP server directly:
+```bash
+archimate-mcp
+```
+
+```bash
+archimate-agent
+```
+
+---
 
 ## Documentation
 
@@ -323,6 +353,25 @@ the recommended reference for installation, deployment, and day-to-day operation
 | [Concepts](https://knuckles-team.github.io/archimate-mcp/concepts/) | concept registry (`CONCEPT:ARCHI-*`) |
 
 `AGENTS.md` is the canonical contributor/agent guidance.
+
+---
+
+## Repository Owners
+
+<img width="100%" height="180em" src="https://github-readme-stats.vercel.app/api?username=example&show_icons=true&hide_border=true&&count_private=true&include_all_commits=true" />
+
+![GitHub followers](https://img.shields.io/github/followers/example)
+![GitHub User's stars](https://img.shields.io/github/stars/example)
+
+---
+
+## Contribute
+
+Contributions are welcome! Please ensure code quality by running local checks before submitting pull requests:
+- Format code using `ruff format .`
+- Lint code using `ruff check .`
+- Validate type-safety with `mypy .`
+- Run test suites using `pytest`
 
 <!-- BEGIN scion-sdk-deployment (generated; do not edit between markers) -->
 
