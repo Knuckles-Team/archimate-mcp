@@ -2,9 +2,7 @@
 name: archimate-mcp-development
 skill_type: skill
 description: >-
-  Develop, test, package, and release the archimate-mcp connector. Use this skill
-  when changing the ArchiMate model engine, MCP tools, ontology content, packaged
-  workflows, documentation, or repository delivery gates.
+  Develop, test, package, and release the archimate-mcp connector. Use this skill when changing the ArchiMate model engine, MCP tools, ontology content, packaged workflows, documentation, or repository delivery gates.
 domain: development
 license: MIT
 tags: [archimate, enterprise-architecture, mcp, connector, sdk, development, delivery]
