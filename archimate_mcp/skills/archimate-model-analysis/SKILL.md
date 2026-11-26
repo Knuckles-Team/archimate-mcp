@@ -2,13 +2,7 @@
 name: archimate-model-analysis
 skill_type: skill
 description: >-
-  Query, traverse, and validate an ArchiMate 3.x model through the archimate-mcp
-  MCP server — list elements by type/layer, find by name, walk neighbors and
-  relationships of an element, introspect the element/relationship vocabulary, and
-  check whether a relationship is structurally valid. Also imports/exports the Open
-  Group Model Exchange file. Use when the agent must understand or audit an existing
-  model. Do NOT use to create or edit model content (use archimate-model-authoring)
-  or to push the model into the knowledge graph (use archimate-kg-ingestion).
+  Query, traverse, and validate an ArchiMate 3.x model through the archimate-mcp MCP server — list elements by type/layer, find by name, walk neighbors and relationships of an element, introspect the element/relationship vocabulary, and check whether a relationship is structurally valid. Use when the agent must understand or audit an existing model.
 license: MIT
 tags: [archimate, enterprise-architecture, analysis, traversal, mcp]
 metadata:
@@ -17,6 +11,8 @@ metadata:
 ---
 
 # Archimate Model Analysis
+
+Scope: Query, traverse, and validate an ArchiMate 3.x model through the archimate-mcp MCP server — list elements by type/layer, find by name, walk neighbors and relationships of an element, introspect the element/relationship vocabulary, and check whether a relationship is structurally valid. Also imports/exports the Open Group Model Exchange file. Use when the agent must understand or audit an existing model. Do NOT use to create or edit model content (use archimate-model-authoring) or to push the model into the knowledge graph (use archimate-kg-ingestion).
 
 Every step below is one typed tool call; there is no `action` or JSON-string argument. Resolve ids by name first, read before you change, and ask for approval before anything destructive.
 

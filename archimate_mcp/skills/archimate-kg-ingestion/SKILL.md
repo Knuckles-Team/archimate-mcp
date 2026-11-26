@@ -2,14 +2,7 @@
 name: archimate-kg-ingestion
 skill_type: skill
 description: >-
-  Natively mirror an ArchiMate 3.x model into the medulla knowledge graph
-  via the archimate-mcp MCP server — every element becomes a typed OWL node
-  (:ArchimateElement subclass such as :ApplicationComponent / :BusinessProcess /
-  :Node), every relationship a reified :ArchimateRelationship node plus a direct
-  edge, and every view an :ArchimateView node, all under one :ArchimateModel. Use
-  when the agent must make an architecture model queryable in the KG alongside the
-  rest of the enterprise. Do NOT use to create/edit the model (use
-  archimate-model-authoring) or to read it locally (use archimate-model-analysis).
+  Natively mirror an ArchiMate 3.x model into the medulla knowledge graph via the archimate-mcp MCP server — every element becomes a typed OWL node (:ArchimateElement subclass such as :ApplicationComponent / :BusinessProcess / :Node), every relationship a reified :ArchimateRelationship node plus a direct edge, and every view an :ArchimateView node, all under one :ArchimateModel.
 license: MIT
 tags: [archimate, knowledge-graph, ingestion, owl, mcp]
 metadata:
@@ -18,6 +11,8 @@ metadata:
 ---
 
 # Archimate Kg Ingestion
+
+Scope: Natively mirror an ArchiMate 3.x model into the medulla knowledge graph via the archimate-mcp MCP server — every element becomes a typed OWL node (:ArchimateElement subclass such as :ApplicationComponent / :BusinessProcess / :Node), every relationship a reified :ArchimateRelationship node plus a direct edge, and every view an :ArchimateView node, all under one :ArchimateModel. Use when the agent must make an architecture model queryable in the KG alongside the rest of the enterprise. Do NOT use to create/edit the model (use archimate-model-authoring) or to read it locally (use archimate-model-analysis).
 
 Every step below is one typed tool call; there is no `action` or JSON-string argument. Resolve ids by name first, read before you change, and ask for approval before anything destructive.
 

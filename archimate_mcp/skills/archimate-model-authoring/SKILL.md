@@ -2,14 +2,7 @@
 name: archimate-model-authoring
 skill_type: skill
 description: >-
-  Author ArchiMate 3.x enterprise-architecture models with the archimate-mcp MCP
-  server — create the model, add typed elements (ApplicationComponent,
-  BusinessProcess, Node, …), wire valid relationships (Serving, Realization,
-  Assignment, …), organize folders, and lay out views (diagrams). Use when the
-  agent must build or edit an ArchiMate model and export it as an Open Group Model
-  Exchange file that opens directly in Archi. Do NOT use for read-only
-  querying/traversal (use archimate-model-analysis) or for pushing a model into the
-  knowledge graph (use archimate-kg-ingestion).
+  Author ArchiMate 3.x enterprise-architecture models with the archimate-mcp MCP server — create the model, add typed elements (ApplicationComponent, BusinessProcess, Node, …), wire valid relationships (Serving, Realization, Assignment, …), organize folders, and lay out views (diagrams).
 license: MIT
 tags: [archimate, enterprise-architecture, modeling, mcp, open-exchange]
 metadata:
@@ -18,6 +11,8 @@ metadata:
 ---
 
 # Archimate Model Authoring
+
+Scope: Author ArchiMate 3.x enterprise-architecture models with the archimate-mcp MCP server — create the model, add typed elements (ApplicationComponent, BusinessProcess, Node, …), wire valid relationships (Serving, Realization, Assignment, …), organize folders, and lay out views (diagrams). Use when the agent must build or edit an ArchiMate model and export it as an Open Group Model Exchange file that opens directly in Archi. Do NOT use for read-only querying/traversal (use archimate-model-analysis) or for pushing a model into the knowledge graph (use archimate-kg-ingestion).
 
 Every step below is one typed tool call; there is no `action` or JSON-string argument. Resolve ids by name first, read before you change, and ask for approval before anything destructive.
 
