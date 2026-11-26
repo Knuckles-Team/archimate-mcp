@@ -13,7 +13,6 @@ from scion_sdk.connector import build_server
 
 from archimate_mcp.api.api_client_archi import ArchiApi
 
-ID = "CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R002"
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACTS = parse_access_contracts(
     (ROOT / "archimate_mcp/ontology/access_contracts.ttl").read_text()
@@ -47,7 +46,7 @@ def _serve(operation):
     return asyncio.run(call())
 
 
-@pytest.mark.spec(ID)
+@pytest.mark.spec("CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R002")
 def test_competency_contracts_certified(tmp_path, monkeypatch):
     monkeypatch.setenv("ARCHI_MODEL_PATH", str(_model(tmp_path)))
     assert {c.entity for c in CONTRACTS} == {"element", "relationship"}
@@ -77,7 +76,7 @@ def test_competency_contracts_certified(tmp_path, monkeypatch):
         assert {frozenset(r) for r in served} == {frozenset(r) for r in recording}
 
 
-@pytest.mark.spec(ID)
+@pytest.mark.spec("CONN-ARCHIMATE-MCP-CONNECTOR-CONTENT-R002")
 def test_contract_refuses_a_recording_missing_a_bound_field():
     (contract,) = [c for c in CONTRACTS if c.entity == "relationship"]
     record = {"id": "x", "type": "Serving", "source": "a"}
